@@ -50,3 +50,11 @@ PRD.md
 session-ses_*.md
 TECHNICAL_ARCHITECTURE_REVIEW.md
 UX_UI_DESIGN_REVIEW.md
+
+# Virtual Environments
+venv/
+env/
+.venv/
+
+# Node modules
+node_modules/
