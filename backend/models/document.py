@@ -48,7 +48,7 @@ class Document(Base):
     docx_path = Column(String(500))
     status = Column(SQLEnum(DocumentStatusEnum), default=DocumentStatusEnum.DRAFT, nullable=False)
     clauses = Column(SQLJSON)
-    metadata = Column(SQLJSON)
+    doc_metadata = Column(SQLJSON)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
