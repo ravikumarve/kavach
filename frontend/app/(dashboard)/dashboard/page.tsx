@@ -1,8 +1,14 @@
 "use client"
 
-import { useSession, signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { Sidebar } from "@/components/sidebar"
+import { TopBar } from "@/components/top-bar"
+import { StatCard } from "@/components/stat-card"
+import { Button } from "@/components/ui/button"
+import { FileText, FolderOpen, LayoutTemplate, Settings } from "lucide-react"
+import Link from "next/link"
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
@@ -16,7 +22,7 @@ export default function DashboardPage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading...</p>
@@ -29,90 +35,119 @@ export default function DashboardPage() {
     return null
   }
 
+  const documentsUsed = session.user.documents_used || 0
+  const documentsLimit = session.user.documents_limit || 3
+  const availableDocuments = documentsLimit - documentsUsed
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Kavach</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              {session.user.email}
-            </span>
-            <button
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity"
-            >
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="flex h-screen bg-background">
+      <Sidebar />
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">Welcome back!</h2>
-          <p className="text-muted-foreground">
-            Create India-law-ready legal documents in minutes
-          </p>
-        </div>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <TopBar />
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="text-lg font-semibold mb-2">Documents Created</h3>
-            <p className="text-3xl font-bold text-primary">0</p>
-            <p className="text-sm text-muted-foreground mt-2">This month</p>
-          </div>
-
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="text-lg font-semibold mb-2">Your Plan</h3>
-            <p className="text-3xl font-bold text-secondary capitalize">
-              {session.user.plan}
+        <main className="flex-1 overflow-y-auto p-8">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold mb-2 text-white">
+              Welcome back, {session.user.name?.split(" ")[0] || "User"}!
+            </h2>
+            <p className="text-gray-400">
+              Create India-law-ready legal documents in minutes
             </p>
-            <p className="text-sm text-muted-foreground mt-2">Current subscription</p>
           </div>
 
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h3 className="text-lg font-semibold mb-2">Available Documents</h3>
-            <p className="text-3xl font-bold text-accent">
-              {session.user.plan === "free" ? "3" : "Unlimited"}
-            </p>
-            <p className="text-sm text-muted-foreground mt-2">Per month</p>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <StatCard
+              title="Documents Created"
+              value={documentsUsed}
+              icon={FileText}
+              description="This month"
+              trend={{ value: 0, isPositive: true }}
+            />
+            <StatCard
+              title="Your Plan"
+              value={session.user.plan || "Free"}
+              icon={LayoutTemplate}
+              description="Current subscription"
+            />
+            <StatCard
+              title="Available Documents"
+              value={availableDocuments}
+              icon={FolderOpen}
+              description="Per month"
+            />
           </div>
-        </div>
 
-        {/* Quick Actions */}
-        <div className="bg-card border border-border rounded-lg p-6">
-          <h3 className="text-xl font-semibold mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button className="p-4 bg-secondary/10 border border-secondary/20 rounded-lg hover:bg-secondary/20 transition-colors text-left">
-              <div className="text-2xl mb-2">📄</div>
-              <div className="font-medium">Create Document</div>
-              <div className="text-sm text-muted-foreground">Generate new legal document</div>
-            </button>
+          {/* Quick Actions */}
+          <div className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border border-purple-500/20 rounded-lg p-6">
+            <h3 className="text-xl font-semibold mb-4 text-white">
+              Quick Actions
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Link href="/dashboard/create">
+                <Button
+                  variant="outline"
+                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                >
+                  <FileText className="h-6 w-6 text-purple-400" />
+                  <div className="text-left">
+                    <div className="font-medium text-white">Create Document</div>
+                    <div className="text-sm text-gray-400">
+                      Generate new legal document
+                    </div>
+                  </div>
+                </Button>
+              </Link>
 
-            <button className="p-4 bg-secondary/10 border border-secondary/20 rounded-lg hover:bg-secondary/20 transition-colors text-left">
-              <div className="text-2xl mb-2">📁</div>
-              <div className="font-medium">My Documents</div>
-              <div className="text-sm text-muted-foreground">View all your documents</div>
-            </button>
+              <Link href="/dashboard/documents">
+                <Button
+                  variant="outline"
+                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                >
+                  <FolderOpen className="h-6 w-6 text-purple-400" />
+                  <div className="text-left">
+                    <div className="font-medium text-white">My Documents</div>
+                    <div className="text-sm text-gray-400">
+                      View all your documents
+                    </div>
+                  </div>
+                </Button>
+              </Link>
 
-            <button className="p-4 bg-secondary/10 border border-secondary/20 rounded-lg hover:bg-secondary/20 transition-colors text-left">
-              <div className="text-2xl mb-2">📋</div>
-              <div className="font-medium">Templates</div>
-              <div className="text-sm text-muted-foreground">Browse document templates</div>
-            </button>
+              <Link href="/dashboard/templates">
+                <Button
+                  variant="outline"
+                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                >
+                  <LayoutTemplate className="h-6 w-6 text-purple-400" />
+                  <div className="text-left">
+                    <div className="font-medium text-white">Templates</div>
+                    <div className="text-sm text-gray-400">
+                      Browse document templates
+                    </div>
+                  </div>
+                </Button>
+              </Link>
 
-            <button className="p-4 bg-secondary/10 border border-secondary/20 rounded-lg hover:bg-secondary/20 transition-colors text-left">
-              <div className="text-2xl mb-2">⚙️</div>
-              <div className="font-medium">Settings</div>
-              <div className="text-sm text-muted-foreground">Manage your account</div>
-            </button>
+              <Link href="/dashboard/settings">
+                <Button
+                  variant="outline"
+                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                >
+                  <Settings className="h-6 w-6 text-purple-400" />
+                  <div className="text-left">
+                    <div className="font-medium text-white">Settings</div>
+                    <div className="text-sm text-gray-400">
+                      Manage your account
+                    </div>
+                  </div>
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   )
 }
