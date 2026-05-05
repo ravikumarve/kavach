@@ -53,7 +53,9 @@ Become the go-to platform for legal document generation in India, serving over 1
   - Consultant Agreement
 
 #### AI-Powered Engine
-- **Groq API Integration:** Uses llama-3.3-70b-versatile model
+- **Groq API Integration:** Uses llama-3.3-70b-versatile model (primary)
+- **NVIDIA NIM API Integration:** meta/llama-3.3-70b-instruct (testing/backup)
+- **Automatic Fallback:** Groq → NVIDIA NIM → NVIDIA NIM Backup
 - **Smart Form Builder:** Dynamic forms based on document type
 - **Real-time Preview:** Live document preview as you type
 - **Document Refinement:** AI-assisted editing and improvement
@@ -99,7 +101,7 @@ Become the go-to platform for legal document generation in India, serving over 1
 - **Database:** PostgreSQL 15+
 - **ORM:** SQLAlchemy 2.0+
 - **Authentication:** JWT with NextAuth.js
-- **AI Engine:** Groq API (llama-3.3-70b-versatile)
+- **AI Engine:** Groq API (llama-3.3-70b-versatile) + NVIDIA NIM API (backup)
 - **PDF Generation:** WeasyPrint
 - **DOCX Generation:** python-docx
 - **Payment:** Razorpay Python SDK
@@ -183,6 +185,8 @@ npm run dev
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/kavach
 GROQ_API_KEY=your_groq_api_key
+NVIDIA_NIM_API_KEY=your_nvidia_nim_api_key
+NVIDIA_NIM_API_URL=https://integrate.api.nvidia.com/v1/chat/completions
 JWT_SECRET=your_jwt_secret
 RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_SECRET=your_razorpay_secret
@@ -308,32 +312,47 @@ kavach/
 │   │   └── ...
 │   └── requirements.txt
 │
-├── frontend/
-│   ├── app/
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
-│   │   ├── (auth)/
-│   │   │   ├── login/page.tsx
-│   │   │   └── register/page.tsx
-│   │   └── (dashboard)/
-│   │       ├── layout.tsx
-│   │       ├── overview/page.tsx
-│   │       ├── generate/page.tsx
-│   │       ├── documents/page.tsx
-│   │       ├── templates/page.tsx
-│   │       └── settings/page.tsx
-│   ├── components/
-│   │   ├── ui/
-│   │   ├── layout/
-│   │   ├── dashboard/
-│   │   ├── generator/
-│   │   └── shared/
-│   ├── lib/
-│   │   ├── api.ts
-│   │   ├── auth.ts
-│   │   └── utils.ts
-│   └── styles/
-│       └── globals.css
+ ├── frontend/
+ │   ├── app/
+ │   │   ├── layout.tsx
+ │   │   ├── page.tsx
+ │   │   ├── (auth)/
+ │   │   │   ├── login/page.tsx
+ │   │   │   └── register/page.tsx
+ │   │   ├── (dashboard)/
+ │   │   │   ├── layout.tsx
+ │   │   │   ├── dashboard/page.tsx
+ │   │   │   ├── documents/page.tsx
+ │   │   │   ├── create/page.tsx
+ │   │   │   ├── templates/page.tsx
+ │   │   │   ├── billing/page.tsx
+ │   │   │   ├── settings/page.tsx
+ │   │   │   └── help/page.tsx
+ │   │   └── api/
+ │   │       └── auth/
+ │   │           └── [...nextauth]/route.ts
+ │   ├── components/
+ │   │   ├── ui/
+ │   │   │   ├── button.tsx
+ │   │   │   ├── card.tsx
+ │   │   │   ├── input.tsx
+ │   │   │   ├── label.tsx
+ │   │   │   ├── select.tsx
+ │   │   │   ├── textarea.tsx
+ │   │   │   ├── dialog.tsx
+ │   │   │   ├── dropdown-menu.tsx
+ │   │   │   └── avatar.tsx
+ │   │   ├── stat-card.tsx
+ │   │   ├── document-card.tsx
+ │   │   ├── sidebar.tsx
+ │   │   └── top-bar.tsx
+ │   ├── lib/
+ │   │   └── utils.ts
+ │   ├── types/
+ │   │   ├── document.ts
+ │   │   └── next-auth.d.ts
+ │   └── styles/
+ │       └── globals.css
 │
 ├── docs/
 │   ├── MARKET_RESEARCH_REPORT.md
@@ -568,6 +587,7 @@ India
 ## 🙏 Acknowledgments
 
 - **Groq** - AI API for document generation
+- **NVIDIA** - NIM API for AI model inference
 - **Vercel** - Frontend hosting platform
 - **Render** - Backend hosting platform
 - **shadcn/ui** - UI component library
@@ -582,7 +602,14 @@ India
 - ✅ Product requirements and technical architecture
 - ✅ UX/UI design and business model validation
 - ✅ Dashboard research and implementation plan
-- 🔄 Development implementation (in progress)
+- 🔄 Development implementation - Phase 1 (70% complete)
+  - ✅ Backend foundation (FastAPI, models, routers, services)
+  - ✅ Frontend foundation (Next.js, shadcn/ui components)
+  - ✅ Authentication system (NextAuth.js)
+  - ✅ Dashboard pages and components
+  - ⏳ PostgreSQL database setup
+  - ⏳ Document generation features
+  - ⏳ CI/CD pipeline
 
 ### Q3 2026
 - 🎯 MVP launch with 8 document types
@@ -609,9 +636,33 @@ India
 ### Development Progress
 
 - **Pre-Development Phase:** 100% Complete ✅
-- **Development Phase:** 0% Complete ⏸️
+- **Development Phase (Phase 1):** 70% Complete 🟡
 - **Testing Phase:** 0% Complete ⏸️
 - **Launch Phase:** 0% Complete ⏸️
+
+### Phase 1 Progress (Foundation & Setup)
+
+**Completed:**
+- ✅ Backend structure creation (FastAPI, models, routers, services)
+- ✅ Frontend structure creation (Next.js, components, pages)
+- ✅ Database models implementation (User, Document, Template, Subscription)
+- ✅ API routers implementation (auth, documents, templates, generate, export, billing)
+- ✅ Backend services implementation (AI engine, PDF service, clause library, stamp duty)
+- ✅ AI prompts creation (8 document-specific prompts)
+- ✅ Configuration files setup (requirements.txt, .env.example)
+- ✅ Documentation creation (README, AGENTS.md)
+- ✅ Alembic migrations setup
+- ✅ Frontend dependencies installation
+- ✅ Authentication system implementation (NextAuth.js)
+- ✅ Dashboard pages creation
+- ✅ shadcn/ui components creation (9 components)
+- ✅ Custom Kavach components creation (StatCard, DocumentCard, Sidebar, TopBar)
+
+**Remaining:**
+- ⏳ PostgreSQL database setup
+- ⏳ Database migrations execution
+- ⏳ Document generation pages
+- ⏳ CI/CD pipeline setup
 
 ### Target Metrics (Post-Launch)
 
