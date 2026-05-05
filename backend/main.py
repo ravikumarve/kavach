@@ -12,7 +12,7 @@ from typing import Dict, Any
 
 from config import settings
 from database import engine, Base, get_db
-from routers import auth, documents, templates, generate, export, billing
+from routers import auth, documents, templates, generate, export, billing, clauses, stamp_duty
 
 
 # Configure logging
@@ -104,6 +104,8 @@ app.include_router(templates.router, prefix="/api/v1/templates", tags=["Template
 app.include_router(generate.router, prefix="/api/v1/generate", tags=["Generation"])
 app.include_router(export.router, prefix="/api/v1/export", tags=["Export"])
 app.include_router(billing.router, prefix="/api/v1/billing", tags=["Billing"])
+app.include_router(clauses.router, prefix="/api/v1/clauses", tags=["Clauses"])
+app.include_router(stamp_duty.router, prefix="/api/v1/stamp-duty", tags=["Stamp Duty"])
 
 
 # Global exception handler
