@@ -1,0 +1,52 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads
+uploads/
+
+# Pre-Development Documentation (Production Use Files)
+agents/
+AGENTS.md
+BUSINESS_MODEL_VALIDATION.md
+DASHBOARD_MARKET_RESEARCH_REPORT.md
+IMPLEMENTATION_PLAN.md
+MARKET_RESEARCH_REPORT.md
+OOP_ADAPTATION_REPORT.md
+OOP_ANALYSIS_REPORT.md
+OOP.md
+PRD.md
+session-ses_*.md
+TECHNICAL_ARCHITECTURE_REVIEW.md
+UX_UI_DESIGN_REVIEW.md
