@@ -10,6 +10,7 @@ import uuid
 
 from database import get_db
 from models import User, Template
+from routers.auth import get_current_user
 
 
 # Create router
