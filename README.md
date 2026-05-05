@@ -654,9 +654,9 @@ India
   - ✅ Account settings
   - ✅ Help center
   - ✅ CI/CD pipeline (GitHub Actions, Vercel, Render)
-- ⏸️ Development implementation - Phase 2 (Core Features)
-  - ⏸️ AI-powered document generation
-  - ⏸️ PDF/DOCX export functionality
+- 🟡 Development implementation - Phase 2 (Core Features) - 15% complete
+  - ✅ AI-powered document generation (with automatic fallback)
+  - ✅ PDF/DOCX export functionality (with watermark support)
   - ⏸️ Clause editor
   - ⏸️ Stamp duty calculator
   - ⏸️ Real-time document preview
@@ -687,6 +687,7 @@ India
 
 - **Pre-Development Phase:** 100% Complete ✅
 - **Development Phase (Phase 1):** 100% Complete ✅
+- **Development Phase (Phase 2):** 15% Complete 🟡
 - **Testing Phase:** 0% Complete ⏸️
 - **Launch Phase:** 0% Complete ⏸️
 
@@ -717,8 +718,27 @@ India
 - ✅ Help center with FAQ
 - ✅ CI/CD pipeline setup (GitHub Actions, Vercel, Render)
 
+### Phase 2 Progress (Core Features Implementation) - 15% Complete 🟡
+
+**Completed:**
+- ✅ AI-powered document generation (Groq API + NVIDIA NIM API)
+- ✅ Automatic fallback mechanism (Groq → NVIDIA NIM → NVIDIA NIM Backup)
+- ✅ PDF export functionality (with watermark support)
+- ✅ DOCX export functionality (with watermark support)
+- ✅ HTML to DOCX conversion (beautifulsoup4)
+- ✅ Document quota checking (free: 3, starter: 20)
+- ✅ User subscription validation
+- ✅ Error handling and status management
+
+**In Progress:**
+- ⏸️ Clause editor interface
+- ⏸️ Stamp duty calculator
+- ⏸️ Real-time document preview
+- ⏸️ Document refinement endpoint testing
+- ⏸️ End-to-end testing for all 8 document types
+
 **Next Phase:**
-- ⏸️ Phase 2: Core Features Implementation
+- ⏸️ Phase 3: Testing & Quality Assurance
 
 ### Target Metrics (Post-Launch)
 

@@ -20,40 +20,58 @@ class PDFService:
         # Create directories if they don't exist
         os.makedirs(self.pdf_dir, exist_ok=True)
     
-    def generate_pdf(
+    async def generate_pdf(
         self,
+        document_id: str,
         html_content: str,
-        output_filename: str,
+        title: str,
         is_watermarked: bool = False
     ) -> str:
         """
         Generate PDF from HTML content
-        
+
         Args:
+            document_id: Document ID for filename
             html_content: HTML content to convert
-            output_filename: Output filename
+            title: Document title
             is_watermarked: Whether to add watermark
-            
+
         Returns:
             Path to generated PDF file
         """
         try:
             # Build CSS
             css_content = self._get_base_css()
-            
+
             if is_watermarked:
                 css_content += self._get_watermark_css()
-            
+
             # Generate PDF
+            output_filename = f"{document_id}.pdf"
             output_path = os.path.join(self.pdf_dir, output_filename)
-            
-            HTML(string=html_content).write_pdf(
+
+            # Wrap HTML content with proper structure
+            full_html = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>{title}</title>
+                <style>{css_content}</style>
+            </head>
+            <body>
+                {html_content}
+            </body>
+            </html>
+            """
+
+            HTML(string=full_html).write_pdf(
                 output_path,
                 stylesheets=[CSS(string=css_content)]
             )
-            
+
             return output_path
-            
+
         except Exception as e:
             raise Exception(f"PDF generation failed: {str(e)}")
     

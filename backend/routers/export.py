@@ -8,10 +8,12 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from typing import Dict, Any
 import uuid
+import os
 
 from database import get_db
-from models import User, Document
+from models import User, Document, Subscription
 from routers.auth import get_current_user
+from services.pdf_service import pdf_service
 
 
 # Create router
@@ -26,27 +28,66 @@ async def export_pdf(
 ) -> FileResponse:
     """
     Export a document as PDF.
+
+    Args:
+        document_id: Document ID to export
+        current_user: Current authenticated user
+        db: Database session
+
+    Returns:
+        FileResponse with PDF file
     """
-    # TODO: Implement PDF export logic
-    document = db.query(Document).filter(
-        Document.id == uuid.UUID(document_id),
-        Document.user_id == current_user.id
-    ).first()
-    
-    if not document:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Document not found"
+    try:
+        # Get document
+        document = db.query(Document).filter(
+            Document.id == uuid.UUID(document_id),
+            Document.user_id == current_user.id
+        ).first()
+
+        if not document:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Document not found"
+            )
+
+        # Check if user has paid plan (no watermark)
+        subscription = db.query(Subscription).filter(
+            Subscription.user_id == current_user.id,
+            Subscription.is_active == True
+        ).first()
+
+        is_watermarked = subscription is None or subscription.plan == "free"
+
+        # Generate PDF
+        pdf_path = await pdf_service.generate_pdf(
+            document_id=str(document.id),
+            html_content=document.html_content,
+            title=document.title,
+            is_watermarked=is_watermarked
         )
-    
-    # Placeholder - return a sample PDF
-    return {
-        "success": True,
-        "data": {
-            "message": "PDF export endpoint - to be implemented",
-            "document_id": document_id
-        }
-    }
+
+        # Check if PDF was generated
+        if not os.path.exists(pdf_path):
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to generate PDF"
+            )
+
+        # Return PDF file
+        filename = f"{document.title.replace(' ', '_')}.pdf"
+        return FileResponse(
+            path=pdf_path,
+            media_type="application/pdf",
+            filename=filename
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"PDF export failed: {str(e)}"
+        )
 
 
 @router.post("/docx/{document_id}")
@@ -57,24 +98,91 @@ async def export_docx(
 ) -> FileResponse:
     """
     Export a document as DOCX.
+
+    Args:
+        document_id: Document ID to export
+        current_user: Current authenticated user
+        db: Database session
+
+    Returns:
+        FileResponse with DOCX file
     """
-    # TODO: Implement DOCX export logic
-    document = db.query(Document).filter(
-        Document.id == uuid.UUID(document_id),
-        Document.user_id == current_user.id
-    ).first()
-    
-    if not document:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Document not found"
+    try:
+        # Get document
+        document = db.query(Document).filter(
+            Document.id == uuid.UUID(document_id),
+            Document.user_id == current_user.id
+        ).first()
+
+        if not document:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Document not found"
+            )
+
+        # Check if user has paid plan (no watermark)
+        subscription = db.query(Subscription).filter(
+            Subscription.user_id == current_user.id,
+            Subscription.is_active == True
+        ).first()
+
+        is_watermarked = subscription is None or subscription.plan == "free"
+
+        # Generate DOCX using python-docx
+        from docx import Document
+        from docx.shared import Pt, Inches
+        from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+        # Create document
+        doc = Document()
+
+        # Add title
+        title = doc.add_heading(document.title, 0)
+        title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+        # Add content
+        # Parse HTML content and convert to DOCX
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(document.html_content, 'html.parser')
+
+        for element in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'li']):
+            if element.name.startswith('h'):
+                level = int(element.name[1])
+                heading = doc.add_heading(element.get_text(), level=level)
+            elif element.name == 'p':
+                para = doc.add_paragraph(element.get_text())
+            elif element.name == 'li':
+                para = doc.add_paragraph(element.get_text(), style='List Bullet')
+
+        # Add watermark if needed
+        if is_watermarked:
+            # Add watermark text
+            section = doc.sections[0]
+            footer = section.footer
+            footer_para = footer.paragraphs[0] if footer.paragraphs else footer.add_paragraph()
+            footer_para.text = "Generated by Kavach — kavachlegal.com"
+            footer_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+        # Save DOCX
+        docx_dir = os.path.join(pdf_service.upload_dir, "docx")
+        os.makedirs(docx_dir, exist_ok=True)
+
+        docx_filename = f"{document.id}.docx"
+        docx_path = os.path.join(docx_dir, docx_filename)
+        doc.save(docx_path)
+
+        # Return DOCX file
+        filename = f"{document.title.replace(' ', '_')}.docx"
+        return FileResponse(
+            path=docx_path,
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            filename=filename
         )
-    
-    # Placeholder - return a sample DOCX
-    return {
-        "success": True,
-        "data": {
-            "message": "DOCX export endpoint - to be implemented",
-            "document_id": document_id
-        }
-    }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"DOCX export failed: {str(e)}"
+        )
