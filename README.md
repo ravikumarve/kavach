@@ -654,12 +654,14 @@ India
   - ✅ Account settings
   - ✅ Help center
   - ✅ CI/CD pipeline (GitHub Actions, Vercel, Render)
-- 🟡 Development implementation - Phase 2 (Core Features) - 15% complete
+- 🟡 Development implementation - Phase 2 (Core Features) - 30% complete
   - ✅ AI-powered document generation (with automatic fallback)
   - ✅ PDF/DOCX export functionality (with watermark support)
-  - ⏸️ Clause editor
-  - ⏸️ Stamp duty calculator
+  - ✅ Clause editor interface (8 endpoints)
+  - ✅ Stamp duty calculator (5 endpoints, 14 states)
   - ⏸️ Real-time document preview
+  - ⏸️ Document refinement endpoint testing
+  - ⏸️ End-to-end testing for all 8 document types
 
 ### Q3 2026
 - 🎯 MVP launch with 8 document types
@@ -687,7 +689,7 @@ India
 
 - **Pre-Development Phase:** 100% Complete ✅
 - **Development Phase (Phase 1):** 100% Complete ✅
-- **Development Phase (Phase 2):** 15% Complete 🟡
+- **Development Phase (Phase 2):** 30% Complete 🟡
 - **Testing Phase:** 0% Complete ⏸️
 - **Launch Phase:** 0% Complete ⏸️
 
@@ -718,7 +720,7 @@ India
 - ✅ Help center with FAQ
 - ✅ CI/CD pipeline setup (GitHub Actions, Vercel, Render)
 
-### Phase 2 Progress (Core Features Implementation) - 15% Complete 🟡
+### Phase 2 Progress (Core Features Implementation) - 30% Complete 🟡
 
 **Completed:**
 - ✅ AI-powered document generation (Groq API + NVIDIA NIM API)
@@ -729,10 +731,16 @@ India
 - ✅ Document quota checking (free: 3, starter: 20)
 - ✅ User subscription validation
 - ✅ Error handling and status management
+- ✅ Clause editor interface (8 endpoints)
+- ✅ Clause library management (get, add, remove, custom clauses)
+- ✅ Document clause management (add/remove clauses from documents)
+- ✅ GST clause generation based on taxability
+- ✅ Stamp duty calculator (5 endpoints)
+- ✅ State-wise stamp duty rate lookup (14 states)
+- ✅ Stamp duty calculation endpoint
+- ✅ State comparison feature for stamp duty rates
 
 **In Progress:**
-- ⏸️ Clause editor interface
-- ⏸️ Stamp duty calculator
 - ⏸️ Real-time document preview
 - ⏸️ Document refinement endpoint testing
 - ⏸️ End-to-end testing for all 8 document types
