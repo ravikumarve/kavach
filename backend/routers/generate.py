@@ -163,8 +163,9 @@ async def refine_document(
         # Refine document using AI
         try:
             refined_content = await ai_engine.refine_document(
-                current_content=document.content_html,
-                instruction=instruction
+                original_content=document.content_html,
+                instruction=instruction,
+                doc_type=document.doc_type.value
             )
 
             # Update document with refined content
