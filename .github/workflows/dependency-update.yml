@@ -1,0 +1,58 @@
+name: Dependency Update
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Update Python dependencies
+      run: |
+        cd backend
+        pip install --upgrade pip
+        pip install pip-tools
+        pip-compile requirements.in --upgrade
+        pip install -r requirements.txt
+
+    - name: Update Node dependencies
+      run: |
+        cd frontend
+        npm update
+        npm audit fix
+
+    - name: Run tests
+      run: |
+        cd backend
+        pytest --cov=. --cov-report=term
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        title: 'chore: Update dependencies'
+        body: |
+          Automated dependency update
+          - Updated Python dependencies
+          - Updated Node dependencies
+        branch: 'chore/update-dependencies'
+        commit-message: 'chore: update dependencies'
+        labels: 'dependencies'
+        draft: false

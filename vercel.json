@@ -1,0 +1,55 @@
+{
+  "buildCommand": "cd frontend && npm run build",
+  "devCommand": "cd frontend && npm run dev",
+  "installCommand": "cd frontend && npm install",
+  "framework": "nextjs",
+  "outputDirectory": "frontend/.next",
+  "regions": ["hkg1"],
+  "env": {
+    "NEXTAUTH_SECRET": {
+      "description": "NextAuth secret key",
+      "value": ""
+    },
+    "NEXTAUTH_URL": {
+      "description": "NextAuth URL",
+      "value": "https://kavach.vercel.app"
+    },
+    "NEXT_PUBLIC_API_URL": {
+      "description": "Backend API URL",
+      "value": "https://kavach-backend.onrender.com"
+    },
+    "NEXT_PUBLIC_RAZORPAY_KEY_ID": {
+      "description": "Razorpay Key ID",
+      "value": ""
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://kavach-backend.onrender.com/api/:path*"
+    }
+  ]
+}

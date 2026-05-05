@@ -1,0 +1,68 @@
+name: Health Check
+
+on:
+  schedule:
+    # Run every hour
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check Backend Health
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.RENDER_BACKEND_URL }}/health || echo "000")
+        if [ $response -eq 200 ]; then
+          echo "✅ Backend is healthy"
+        else
+          echo "❌ Backend health check failed with status code: $response"
+          exit 1
+        fi
+
+    - name: Check Frontend Health
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.VERCEL_FRONTEND_URL }})
+        if [ $response -eq 200 ]; then
+          echo "✅ Frontend is healthy"
+        else
+          echo "❌ Frontend health check failed with status code: $response"
+          exit 1
+        fi
+
+    - name: Check Database Connection
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: |
+        python -c "
+        import os
+        import psycopg2
+        try:
+            conn = psycopg2.connect(os.environ['DATABASE_URL'])
+            cursor = conn.cursor()
+            cursor.execute('SELECT 1')
+            result = cursor.fetchone()
+            print('✅ Database connection successful')
+            conn.close()
+        except Exception as e:
+            print(f'❌ Database connection failed: {e}')
+            exit(1)
+        "
+
+    - name: Create Issue on Failure
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Health Check Failed',
+            body: 'Health check failed. Please investigate the issue.',
+            labels: ['bug', 'urgent']
+          })

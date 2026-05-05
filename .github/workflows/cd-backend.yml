@@ -1,0 +1,72 @@
+name: CD - Backend
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/cd-backend.yml'
+
+jobs:
+  deploy:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      env:
+        DATABASE_URL: postgresql://test:test@localhost:5432/test
+        GROQ_API_KEY: test_key
+        NVIDIA_NIM_API_KEY: test_key
+        JWT_SECRET: test_secret
+      run: |
+        cd backend
+        pytest --cov=. --cov-report=term --cov-report=xml
+
+    - name: Trigger Render deployment
+      run: |
+        curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{"branch": "main"}' \
+          https://api.render.com/v1/services/${{ secrets.RENDER_BACKEND_SERVICE_ID }}/deploys
+
+    - name: Wait for deployment
+      run: |
+        echo "Waiting for Render deployment to complete..."
+        sleep 60
+
+    - name: Verify deployment
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.RENDER_BACKEND_URL }})
+        if [ $response -eq 200 ]; then
+          echo "✅ Backend deployment successful"
+        else
+          echo "❌ Backend deployment failed with status code: $response"
+          exit 1
+        fi
+
+    - name: Notify on success
+      if: success()
+      run: |
+        echo "Backend deployed successfully to ${{ secrets.RENDER_BACKEND_URL }}"
+
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "Backend deployment failed"
+        exit 1
