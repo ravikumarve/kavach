@@ -81,7 +81,7 @@ async def get_document(
                 "content_html": document.content_html,
                 "status": document.status,
                 "clauses": document.clauses,
-                "metadata": document.metadata,
+                "doc_metadata": document.doc_metadata,
                 "created_at": document.created_at.isoformat(),
                 "updated_at": document.updated_at.isoformat()
             }

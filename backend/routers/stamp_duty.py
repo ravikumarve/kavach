@@ -60,7 +60,7 @@ async def get_all_states(
 async def get_state_rates(
     state: str,
     current_user: User = Depends(get_current_user)
-) -> Dict[str, Dict[str, float]]:
+) -> Dict[str, Any]:
     """
     Get stamp duty rates for all document types in a state
 
@@ -242,7 +242,7 @@ async def compare_states(
 @router.get("/document-types")
 async def get_document_types(
     current_user: User = Depends(get_current_user)
-) -> Dict[str, List[str]]:
+) -> Dict[str, Any]:
     """
     Get list of all supported document types
 

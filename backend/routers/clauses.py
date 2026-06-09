@@ -135,7 +135,7 @@ async def add_clause_to_document(
     position: Optional[int] = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
-) -> Dict[str, str]:
+) -> Dict[str, Any]:
     """
     Add a clause to a document
 
@@ -214,7 +214,7 @@ async def remove_clause_from_document(
     clause_type: str,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
-) -> Dict[str, str]:
+) -> Dict[str, Any]:
     """
     Remove a clause from a document
 
@@ -289,7 +289,7 @@ async def add_custom_clause(
     position: Optional[int] = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
-) -> Dict[str, str]:
+) -> Dict[str, Any]:
     """
     Add a custom clause to a document
 
