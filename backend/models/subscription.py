@@ -37,9 +37,9 @@ class Subscription(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, unique=True, index=True)
-    plan = Column(SQLEnum(PlanEnum), nullable=False)
+    plan = Column(SQLEnum(PlanEnum, native_enum=False), nullable=False)
     razorpay_sub_id = Column(String(255))
-    status = Column(SQLEnum(SubscriptionStatusEnum), default=SubscriptionStatusEnum.ACTIVE, nullable=False)
+    status = Column(SQLEnum(SubscriptionStatusEnum, native_enum=False), default=SubscriptionStatusEnum.ACTIVE, nullable=False)
     expires_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

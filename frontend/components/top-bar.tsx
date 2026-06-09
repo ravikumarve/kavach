@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Bell, Search } from "lucide-react"
 import { useSession } from "next-auth/react"
+import { cn } from "@/lib/utils"
 
 interface TopBarProps {
   className?: string
@@ -28,7 +29,7 @@ export function TopBar({ className }: TopBarProps) {
   return (
     <div
       className={cn(
-        "flex h-16 items-center justify-between border-b border-purple-500/20 bg-gradient-to-r from-purple-900/10 to-magenta-900/10",
+        "flex h-16 items-center justify-between border-b border-indigo-500/20 bg-gradient-to-r from-indigo-900/10 to-indigo-900/10",
         className
       )}
     >
@@ -38,23 +39,22 @@ export function TopBar({ className }: TopBarProps) {
           <input
             type="text"
             placeholder="Search documents..."
-            className="w-full rounded-lg border border-purple-500/20 bg-purple-900/10 px-3 py-2 pl-10 text-sm text-gray-300 placeholder:text-gray-500 focus:border-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            className="w-full rounded-lg border border-indigo-500/20 bg-indigo-900/10 px-3 py-2 pl-10 text-sm text-gray-300 placeholder:text-gray-500 focus:border-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
       </div>
 
       <div className="flex items-center gap-4">
-        <button className="relative rounded-lg p-2 text-gray-400 transition-colors hover:bg-purple-500/10 hover:text-gray-300">
+        <button className="relative rounded-lg p-2 text-gray-400 transition-colors hover:bg-indigo-500/10 hover:text-gray-300">
           <Bell className="h-5 w-5" />
           <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
         </button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-lg p-2 transition-colors hover:bg-purple-500/10">
+            <button className="flex items-center gap-2 rounded-lg p-2 transition-colors hover:bg-indigo-500/10">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={session?.user?.image || ""} />
-                <AvatarFallback className="bg-purple-500/20 text-purple-400">
+                <AvatarFallback className="bg-indigo-500/20 text-indigo-400">
                   {userInitials}
                 </AvatarFallback>
               </Avatar>
@@ -72,13 +72,11 @@ export function TopBar({ className }: TopBarProps) {
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <a href="/dashboard/settings">Profile</a>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="/dashboard/billing">Billing</a>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="/dashboard/settings">Settings</a>
+              <a href="/settings">Profile</a>
+
+              <a href="/billing">Billing</a>
+
+              <a href="/settings">Settings</a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

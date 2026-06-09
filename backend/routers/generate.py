@@ -59,10 +59,10 @@ async def generate_document(
         # Create document record
         document = Document(
             user_id=current_user.id,
-            doc_type=document_type,
+            doc_type=document_type.value,
             title=form_data.get("title", f"{document_type.value.replace('_', ' ').title()}"),
             content_json=form_data,
-            status=DocumentStatusEnum.GENERATING,
+            status=DocumentStatusEnum.GENERATING.value,
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
         )
@@ -83,7 +83,7 @@ async def generate_document(
                 **form_data,
                 "generated_content": generated_content["text"]
             }
-            document.status = DocumentStatusEnum.COMPLETED
+            document.status = DocumentStatusEnum.COMPLETED.value
             document.updated_at = datetime.utcnow()
 
             # Generate PDF
@@ -119,7 +119,7 @@ async def generate_document(
 
         except Exception as e:
             # Update document status to failed
-            document.status = DocumentStatusEnum.FAILED
+            document.status = DocumentStatusEnum.FAILED.value
             document.updated_at = datetime.utcnow()
             db.commit()
 

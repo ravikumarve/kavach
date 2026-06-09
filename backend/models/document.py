@@ -16,7 +16,9 @@ from database import Base
 class DocumentStatusEnum(str, enum.Enum):
     """Document status enumeration."""
     DRAFT = "draft"
-    COMPLETE = "complete"
+    GENERATING = "generating"
+    COMPLETED = "completed"
+    FAILED = "failed"
     ARCHIVED = "archived"
 
 
@@ -40,13 +42,13 @@ class Document(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
-    doc_type = Column(SQLEnum(DocumentTypeEnum), nullable=False, index=True)
+    doc_type = Column(SQLEnum(DocumentTypeEnum, native_enum=False), nullable=False, index=True)
     title = Column(String(500), nullable=False)
     content_json = Column(SQLJSON, nullable=False)
     content_html = Column(Text)
     pdf_path = Column(String(500))
     docx_path = Column(String(500))
-    status = Column(SQLEnum(DocumentStatusEnum), default=DocumentStatusEnum.DRAFT, nullable=False)
+    status = Column(SQLEnum(DocumentStatusEnum, native_enum=False), default=DocumentStatusEnum.DRAFT.value, nullable=False)
     clauses = Column(SQLJSON)
     doc_metadata = Column(SQLJSON)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

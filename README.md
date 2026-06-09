@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Kavach Logo](https://img.shields.io/badge/Kavach-AI%20Legal%20Docs-purple?style=for-the-badge)
+![Kavach Logo](https://img.shields.io/badge/Kavach-AI%20Legal%20Docs-indigo?style=for-the-badge)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-Proprietary-red?style=for-the-badge)
 ![Status](https://img.shields.io/badge/status-Development%20Ready-success?style=for-the-badge)
@@ -82,6 +82,12 @@ Become the go-to platform for legal document generation in India, serving over 1
 - **Activity Feed:** Real-time activity updates
 - **Compliance Calendar:** Track important deadlines
 - **Analytics Dashboard:** Insights and reporting
+
+#### UI & Theme
+- **Slate Dark Theme:** Deep dark background (#0a0a12) with indigo accent
+- **Professional Landing Page:** Hero, features, pricing, CTA sections
+- **Custom Signout Page:** Dark-themed confirmation page
+- **Responsive Design:** Mobile-friendly layout throughout
 
 ### 💳 Subscription Plans
 
@@ -316,6 +322,8 @@ kavach/
  │   ├── app/
  │   │   ├── layout.tsx
  │   │   ├── page.tsx
+ │   │   ├── auth/
+ │   │   │   └── signout/page.tsx
  │   │   ├── (auth)/
  │   │   │   ├── login/page.tsx
  │   │   │   └── register/page.tsx
@@ -345,7 +353,8 @@ kavach/
  │   │   ├── stat-card.tsx
  │   │   ├── document-card.tsx
  │   │   ├── sidebar.tsx
- │   │   └── top-bar.tsx
+ │   │   ├── top-bar.tsx
+ │   │   └── providers.tsx
  │   ├── lib/
  │   │   └── utils.ts
  │   ├── types/
@@ -654,19 +663,26 @@ India
   - ✅ Account settings
   - ✅ Help center
   - ✅ CI/CD pipeline (GitHub Actions, Vercel, Render)
-- 🟡 Development implementation - Phase 2 (Core Features) - 40% complete
+- 🟢 Development implementation - Phase 2 (Core Features) - 80% complete
   - ✅ AI-powered document generation (with automatic fallback)
   - ✅ PDF/DOCX export functionality (with watermark support)
   - ✅ Clause editor interface (8 endpoints)
   - ✅ Stamp duty calculator (5 endpoints, 14 states)
   - ✅ API testing and documentation (30+ endpoints)
   - ✅ Bug fixes and improvements
+  - ✅ E2E AI generation pipeline (Groq API via httpx)
+  - ✅ PDF download UI with blob download
+  - ✅ Live document preview in browser (iframe)
+  - ✅ Razorpay billing integration (backend + frontend)
+  - ✅ Slate Dark theme (indigo accent) — redesigned
+  - ✅ Professional landing page redesign
+  - ✅ Custom signout page (dark themed)
   - ⏸️ End-to-end testing with authentication
-  - ⏸️ Frontend integration
+  - ⏸️ Frontend integration for clause editor & stamp duty
 
 ### Q3 2026
 - 🎯 MVP launch with 8 document types
-- 🎯 Razorpay payment integration
+- 🎯 Replace placeholder Razorpay keys & go live
 - 🎯 Mobile-responsive design
 - 🎯 User onboarding and support
 
@@ -690,9 +706,9 @@ India
 
 - **Pre-Development Phase:** 100% Complete ✅
 - **Development Phase (Phase 1):** 100% Complete ✅
-- **Development Phase (Phase 2):** 40% Complete 🟡
+- **Development Phase (Phase 2):** 80% Complete 🟢
 - **Testing Phase:** 0% Complete ⏸️
-- **Launch Phase:** 0% Complete ⏸️
+- **Launch Phase:** 0% Complete ⏸️ (blocked on Razorpay keys)
 
 ### Phase 1 Progress (Foundation & Setup) - COMPLETED ✅
 
@@ -721,10 +737,10 @@ India
 - ✅ Help center with FAQ
 - ✅ CI/CD pipeline setup (GitHub Actions, Vercel, Render)
 
-### Phase 2 Progress (Core Features Implementation) - 40% Complete 🟡
+### Phase 2 Progress (Core Features Implementation) - 80% Complete 🟢
 
 **Completed:**
-- ✅ AI-powered document generation (Groq API + NVIDIA NIM API)
+- ✅ AI-powered document generation — **E2E working** (Groq API via httpx)
 - ✅ Automatic fallback mechanism (Groq → NVIDIA NIM → NVIDIA NIM Backup)
 - ✅ PDF export functionality (with watermark support)
 - ✅ DOCX export functionality (with watermark support)
@@ -743,14 +759,21 @@ India
 - ✅ API testing and documentation (30+ endpoints)
 - ✅ Bug fixes and improvements
 - ✅ Comprehensive API documentation
+- ✅ **PDF download UI** — blob download on documents page
+- ✅ **Live preview** — iframe HTML preview on /create/[type]
+- ✅ **Razorpay billing** — backend (create-order, verify-payment, webhook, plans)
+- ✅ **Razorpay checkout** — frontend integration with modal
+- ✅ **Slate Dark theme** — switched from purple/magenta to indigo accent
+- ✅ **Professional landing page** — redesigned hero, features, pricing, CTA
+- ✅ **Custom signout page** — dark themed at /auth/signout
+- ✅ **Darker background** — #0a0a12 (slate 950)
 
 **In Progress:**
-- ⏸️ End-to-end testing with authentication
-- ⏸️ Frontend integration
-- ⏸️ Real-time document preview
-- ⏸️ Document refinement endpoint testing
+- ⏸️ Frontend integration for clause editor & stamp duty calculator
+- ⏸️ Replace placeholder Razorpay keys with real keys
 
 **Next Phase:**
+- ⏸️ Production deployment (Vercel + Render)
 - ⏸️ Phase 3: Testing & Quality Assurance
 
 ### Target Metrics (Post-Launch)

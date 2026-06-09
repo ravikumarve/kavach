@@ -6,60 +6,115 @@ import { Sidebar } from "@/components/sidebar"
 import { TopBar } from "@/components/top-bar"
 import { DocumentCard } from "@/components/document-card"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, Plus, Search, Filter } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { FileText, Plus, Search, DownloadCloud } from "lucide-react"
 import { DocumentType, DocumentStatus } from "@/types/document"
 
-// Mock data for demonstration
-const mockDocuments = [
-  {
-    id: "1",
-    title: "NDA - TechCorp Solutions",
-    type: DocumentType.NDA,
-    status: DocumentStatus.COMPLETED,
-    createdAt: "2026-05-01T10:00:00Z",
-    updatedAt: "2026-05-01T10:30:00Z",
-  },
-  {
-    id: "2",
-    title: "Freelance Contract - John Doe",
-    type: DocumentType.FREELANCE_CONTRACT,
-    status: DocumentStatus.COMPLETED,
-    createdAt: "2026-05-02T14:00:00Z",
-    updatedAt: "2026-05-02T14:30:00Z",
-  },
-  {
-    id: "3",
-    title: "Rent Agreement - 123 Main Street",
-    type: DocumentType.RENT_AGREEMENT,
-    status: DocumentStatus.DRAFT,
-    createdAt: "2026-05-03T09:00:00Z",
-    updatedAt: "2026-05-03T09:15:00Z",
-  },
-]
+interface BackendDocument {
+  id: string
+  title: string
+  doc_type: string
+  status: string
+  created_at: string
+  updated_at: string
+}
 
 export default function DocumentsPage() {
   const { data: session, status } = useSession()
-  const [documents, setDocuments] = useState(mockDocuments)
+  const [documents, setDocuments] = useState<BackendDocument[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [filterType, setFilterType] = useState<string>("all")
   const [filterStatus, setFilterStatus] = useState<string>("all")
+  const [downloading, setDownloading] = useState<string | null>(null)
 
   useEffect(() => {
-    // TODO: Fetch documents from API
-    // const fetchDocuments = async () => {
-    //   try {
-    //     const response = await fetch('/api/v1/documents/')
-    //     if (response.ok) {
-    //       const data = await response.json()
-    //       setDocuments(data.data.documents)
-    //     }
-    //   } catch (error) {
-    //     console.error('Error fetching documents:', error)
-    //   }
-    // }
-    // fetchDocuments()
-  }, [])
+    if (session?.user?.accessToken) {
+      fetchDocuments()
+    }
+  }, [session])
+
+  const fetchDocuments = async () => {
+    try {
+      const response = await fetch("/api/v1/documents/", {
+        headers: {
+          Authorization: `Bearer ${session?.user?.accessToken}`,
+        },
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setDocuments(data.data.documents)
+      }
+    } catch (error) {
+      console.error("Error fetching documents:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDownload = async (id: string) => {
+    setDownloading(id)
+    try {
+      const response = await fetch(`/api/v1/export/pdf/${id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session?.user?.accessToken}`,
+        },
+      })
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => null)
+        throw new Error(errData?.detail || `Download failed (${response.status})`)
+      }
+
+      // Get filename from content-disposition or use default
+      const disposition = response.headers.get("content-disposition")
+      let filename = "document.pdf"
+      if (disposition) {
+        const match = disposition.match(/filename="?(.+?)"?$/)
+        if (match) filename = match[1]
+      }
+
+      // Create blob and trigger download
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error("Download error:", error)
+      alert(error instanceof Error ? error.message : "Download failed")
+    } finally {
+      setDownloading(null)
+    }
+  }
+
+  const handleView = (id: string) => {
+    window.location.href = `/documents/${id}`
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this document?")) return
+
+    try {
+      const response = await fetch(`/api/v1/documents/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${session?.user?.accessToken}`,
+        },
+      })
+
+      if (response.ok) {
+        setDocuments((docs) => docs.filter((d) => d.id !== id))
+      }
+    } catch (error) {
+      console.error("Delete error:", error)
+    }
+  }
 
   if (status === "loading") {
     return (
@@ -76,30 +131,29 @@ export default function DocumentsPage() {
     return null
   }
 
+  // Map backend doc_type to frontend DocumentType enum
+  const mapDocType = (docType: string): string => {
+    const typeMap: Record<string, string> = {
+      nda: DocumentType.NDA,
+      freelance_contract: DocumentType.FREELANCE_CONTRACT,
+      rent_agreement: DocumentType.RENT_AGREEMENT,
+      vendor_agreement: DocumentType.VENDOR_AGREEMENT,
+      offer_letter: DocumentType.OFFER_LETTER,
+      partnership_deed: DocumentType.PARTNERSHIP_DEED,
+      service_agreement: DocumentType.SERVICE_AGREEMENT,
+      consultant_agreement: DocumentType.CONSULTANT_AGREEMENT,
+    }
+    return typeMap[docType] || DocumentType.NDA
+  }
+
   const filteredDocuments = documents.filter((doc) => {
     const matchesSearch =
       doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.type.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesType = filterType === "all" || doc.type === filterType
-    const matchesStatus =
-      filterStatus === "all" || doc.status === filterStatus
+      doc.doc_type.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesType = filterType === "all" || doc.doc_type === filterType
+    const matchesStatus = filterStatus === "all" || doc.status === filterStatus
     return matchesSearch && matchesType && matchesStatus
   })
-
-  const handleView = (id: string) => {
-    // TODO: Navigate to document detail page
-    console.log("View document:", id)
-  }
-
-  const handleDownload = (id: string) => {
-    // TODO: Download document
-    console.log("Download document:", id)
-  }
-
-  const handleDelete = (id: string) => {
-    // TODO: Delete document
-    console.log("Delete document:", id)
-  }
 
   return (
     <div className="flex h-screen bg-background">
@@ -113,8 +167,8 @@ export default function DocumentsPage() {
             <div className="flex items-center justify-between mb-2">
               <h1 className="text-3xl font-bold text-white">My Documents</h1>
               <Button
-                onClick={() => (window.location.href = "/dashboard/create")}
-                className="bg-purple-500 hover:bg-purple-600"
+                onClick={() => (window.location.href = "/create")}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Document
@@ -126,7 +180,7 @@ export default function DocumentsPage() {
           </div>
 
           {/* Filters */}
-          <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20 mb-6">
+          <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20 mb-6">
             <CardContent className="pt-6">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
@@ -137,7 +191,7 @@ export default function DocumentsPage() {
                       placeholder="Search documents..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full rounded-lg border border-purple-500/20 bg-purple-900/10 px-3 py-2 pl-10 text-sm text-gray-300 placeholder:text-gray-500 focus:border-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                      className="w-full rounded-lg border border-indigo-500/20 bg-indigo-900/10 px-3 py-2 pl-10 text-sm text-gray-300 placeholder:text-gray-500 focus:border-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                 </div>
@@ -145,58 +199,48 @@ export default function DocumentsPage() {
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
-                    className="rounded-lg border border-purple-500/20 bg-purple-900/10 px-3 py-2 text-sm text-gray-300 focus:border-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                    className="rounded-lg border border-indigo-500/20 bg-indigo-900/10 px-3 py-2 text-sm text-gray-300 focus:border-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   >
                     <option value="all">All Types</option>
-                    <option value={DocumentType.NDA}>NDA</option>
-                    <option value={DocumentType.FREELANCE_CONTRACT}>
-                      Freelance Contract
-                    </option>
-                    <option value={DocumentType.RENT_AGREEMENT}>
-                      Rent Agreement
-                    </option>
-                    <option value={DocumentType.VENDOR_AGREEMENT}>
-                      Vendor Agreement
-                    </option>
-                    <option value={DocumentType.OFFER_LETTER}>
-                      Offer Letter
-                    </option>
-                    <option value={DocumentType.PARTNERSHIP_DEED}>
-                      Partnership Deed
-                    </option>
-                    <option value={DocumentType.SERVICE_AGREEMENT}>
-                      Service Agreement
-                    </option>
-                    <option value={DocumentType.CONSULTANT_AGREEMENT}>
-                      Consultant Agreement
-                    </option>
+                    <option value="nda">NDA</option>
+                    <option value="freelance_contract">Freelance Contract</option>
+                    <option value="rent_agreement">Rent Agreement</option>
+                    <option value="vendor_agreement">Vendor Agreement</option>
+                    <option value="offer_letter">Offer Letter</option>
+                    <option value="partnership_deed">Partnership Deed</option>
+                    <option value="service_agreement">Service Agreement</option>
+                    <option value="consultant_agreement">Consultant Agreement</option>
                   </select>
                   <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
-                    className="rounded-lg border border-purple-500/20 bg-purple-900/10 px-3 py-2 text-sm text-gray-300 focus:border-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                    className="rounded-lg border border-indigo-500/20 bg-indigo-900/10 px-3 py-2 text-sm text-gray-300 focus:border-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                   >
                     <option value="all">All Status</option>
-                    <option value={DocumentStatus.DRAFT}>Draft</option>
-                    <option value={DocumentStatus.GENERATING}>
-                      Generating
-                    </option>
-                    <option value={DocumentStatus.COMPLETED}>
-                      Completed
-                    </option>
-                    <option value={DocumentStatus.FAILED}>Failed</option>
+                    <option value="draft">Draft</option>
+                    <option value="generating">Generating</option>
+                    <option value="completed">Completed</option>
+                    <option value="failed">Failed</option>
                   </select>
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Loading State */}
+          {loading && (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-400 mx-auto mb-4"></div>
+              <p className="text-gray-400">Loading documents...</p>
+            </div>
+          )}
+
           {/* Documents Grid */}
-          {filteredDocuments.length === 0 ? (
-            <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20">
+          {!loading && filteredDocuments.length === 0 ? (
+            <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20">
               <CardContent className="pt-6">
                 <div className="text-center py-12">
-                  <FileText className="h-16 w-16 text-purple-400 mx-auto mb-4" />
+                  <FileText className="h-16 w-16 text-indigo-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-white mb-2">
                     No documents found
                   </h3>
@@ -209,8 +253,10 @@ export default function DocumentsPage() {
                     filterType === "all" &&
                     filterStatus === "all" && (
                       <Button
-                        onClick={() => (window.location.href = "/dashboard/create")}
-                        className="bg-purple-500 hover:bg-purple-600"
+                        onClick={() =>
+                          (window.location.href = "/create")
+                        }
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white"
                       >
                         <Plus className="h-4 w-4 mr-2" />
                         Create Document
@@ -226,10 +272,10 @@ export default function DocumentsPage() {
                   key={doc.id}
                   id={doc.id}
                   title={doc.title}
-                  type={doc.type}
-                  status={doc.status}
-                  createdAt={doc.createdAt}
-                  updatedAt={doc.updatedAt}
+                  type={mapDocType(doc.doc_type) as DocumentType}
+                  status={doc.status as DocumentStatus}
+                  createdAt={doc.created_at}
+                  updatedAt={doc.updated_at}
                   onView={() => handleView(doc.id)}
                   onDownload={() => handleDownload(doc.id)}
                   onDelete={() => handleDelete(doc.id)}

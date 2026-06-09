@@ -88,7 +88,7 @@ export default function SettingsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Profile Information */}
-            <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20">
+            <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20">
               <CardHeader>
                 <CardTitle className="text-white">Profile Information</CardTitle>
                 <CardDescription className="text-gray-400">
@@ -121,7 +121,7 @@ export default function SettingsPage() {
                       type="email"
                       value={formData.email}
                       disabled
-                      className="pl-10 bg-purple-900/5"
+                      className="pl-10 bg-indigo-900/5"
                       placeholder="Enter your email"
                     />
                   </div>
@@ -179,7 +179,7 @@ export default function SettingsPage() {
                 <Button
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="w-full bg-purple-500 hover:bg-purple-600"
+                  className="w-full bg-indigo-500 hover:bg-indigo-600"
                 >
                   {isSaving ? (
                     "Saving..."
@@ -196,7 +196,7 @@ export default function SettingsPage() {
             {/* Account Settings */}
             <div className="space-y-6">
               {/* Change Password */}
-              <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20">
+              <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20">
                 <CardHeader>
                   <CardTitle className="text-white">Change Password</CardTitle>
                   <CardDescription className="text-gray-400">
@@ -207,7 +207,7 @@ export default function SettingsPage() {
                   <Button
                     onClick={handleChangePassword}
                     variant="outline"
-                    className="w-full bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                    className="w-full bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                   >
                     <Key className="h-4 w-4 mr-2" />
                     Change Password
@@ -216,7 +216,7 @@ export default function SettingsPage() {
               </Card>
 
               {/* Subscription Info */}
-              <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20">
+              <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20">
                 <CardHeader>
                   <CardTitle className="text-white">Subscription</CardTitle>
                   <CardDescription className="text-gray-400">
@@ -236,7 +236,7 @@ export default function SettingsPage() {
                         Documents Used
                       </span>
                       <span className="text-sm text-white">
-                        {session.user.documents_used || 0}
+                        0
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -253,9 +253,9 @@ export default function SettingsPage() {
                     </div>
                   </div>
                   <Button
-                    onClick={() => (window.location.href = "/dashboard/billing")}
+                    onClick={() => (window.location.href = "/billing")}
                     variant="outline"
-                    className="w-full mt-4 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                    className="w-full mt-4 bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                   >
                     Manage Subscription
                   </Button>

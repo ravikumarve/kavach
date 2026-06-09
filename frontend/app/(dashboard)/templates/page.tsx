@@ -6,7 +6,7 @@ import { Sidebar } from "@/components/sidebar"
 import { TopBar } from "@/components/top-bar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { FileText, Briefcase, Home, Building, User, Handshake, FileCheck, UserCheck, Search } from "lucide-react"
+import { FileText, Briefcase, Home, Building, User, Users, FileCheck, UserCheck, Search } from "lucide-react"
 import { DocumentType } from "@/types/document"
 
 const templates = [
@@ -54,9 +54,9 @@ const templates = [
     type: DocumentType.PARTNERSHIP_DEED,
     title: "Partnership Deed",
     description: "Define partnership terms and profit-sharing arrangements",
-    icon: Handshake,
+    icon: Users,
     category: "Business",
-    isPremium: true,
+    isPremium: false,
   },
   {
     type: DocumentType.SERVICE_AGREEMENT,
@@ -108,7 +108,7 @@ export default function TemplatesPage() {
   })
 
   const handleUseTemplate = (type: DocumentType) => {
-    window.location.href = `/dashboard/create/${type}`
+    window.location.href = `/create/${type}`
   }
 
   return (
@@ -129,7 +129,7 @@ export default function TemplatesPage() {
           </div>
 
           {/* Search and Filters */}
-          <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20 mb-6">
+          <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20 mb-6">
             <CardContent className="pt-6">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
@@ -140,7 +140,7 @@ export default function TemplatesPage() {
                       placeholder="Search templates..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full rounded-lg border border-purple-500/20 bg-purple-900/10 px-3 py-2 pl-10 text-sm text-gray-300 placeholder:text-gray-500 focus:border-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                      className="w-full rounded-lg border border-indigo-500/20 bg-indigo-900/10 px-3 py-2 pl-10 text-sm text-gray-300 placeholder:text-gray-500 focus:border-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                     />
                   </div>
                 </div>
@@ -152,8 +152,8 @@ export default function TemplatesPage() {
                       onClick={() => setSelectedCategory(category)}
                       className={
                         selectedCategory === category
-                          ? "bg-purple-500 hover:bg-purple-600"
-                          : "bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                          ? "bg-indigo-500 hover:bg-indigo-600"
+                          : "bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                       }
                     >
                       {category}
@@ -171,15 +171,15 @@ export default function TemplatesPage() {
               return (
                 <Card
                   key={template.type}
-                  className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20 hover:border-purple-500/40 transition-all"
+                  className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20 hover:border-indigo-500/40 transition-all"
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between mb-2">
-                      <div className="p-3 bg-purple-500/20 rounded-lg">
-                        <Icon className="h-6 w-6 text-purple-400" />
+                      <div className="p-3 bg-indigo-500/20 rounded-lg">
+                        <Icon className="h-6 w-6 text-indigo-400" />
                       </div>
                       {template.isPremium && (
-                        <span className="text-xs text-purple-400 bg-purple-500/10 px-2 py-1 rounded-full border border-purple-500/20">
+                        <span className="text-xs text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded-full border border-indigo-500/20">
                           Premium
                         </span>
                       )}
@@ -197,14 +197,14 @@ export default function TemplatesPage() {
                         {template.category}
                       </span>
                       {template.isPremium && (
-                        <span className="text-xs text-purple-400">
+                        <span className="text-xs text-indigo-400">
                           Requires Pro plan
                         </span>
                       )}
                     </div>
                     <Button
                       onClick={() => handleUseTemplate(template.type)}
-                      className="w-full bg-purple-500 hover:bg-purple-600"
+                      className="w-full bg-indigo-500 hover:bg-indigo-600"
                     >
                       Use Template
                     </Button>
@@ -215,10 +215,10 @@ export default function TemplatesPage() {
           </div>
 
           {filteredTemplates.length === 0 && (
-            <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20">
+            <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20">
               <CardContent className="pt-6">
                 <div className="text-center py-12">
-                  <FileText className="h-16 w-16 text-purple-400 mx-auto mb-4" />
+                  <FileText className="h-16 w-16 text-indigo-400 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-white mb-2">
                     No templates found
                   </h3>

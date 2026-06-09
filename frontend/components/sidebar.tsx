@@ -13,12 +13,12 @@ import {
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Documents", href: "/dashboard/documents", icon: FileText },
-  { name: "Create Document", href: "/dashboard/create", icon: FilePlus },
-  { name: "Templates", href: "/dashboard/templates", icon: FileText },
-  { name: "Billing", href: "/dashboard/billing", icon: CreditCard },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
-  { name: "Help", href: "/dashboard/help", icon: HelpCircle },
+  { name: "Documents", href: "/documents", icon: FileText },
+  { name: "Create Document", href: "/create", icon: FilePlus },
+  { name: "Templates", href: "/templates", icon: FileText },
+  { name: "Billing", href: "/billing", icon: CreditCard },
+  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Help", href: "/help", icon: HelpCircle },
 ]
 
 interface SidebarProps {
@@ -31,12 +31,12 @@ export function Sidebar({ className }: SidebarProps) {
   return (
     <div
       className={cn(
-        "flex h-full w-64 flex-col bg-gradient-to-b from-purple-900/20 to-magenta-900/20 border-r border-purple-500/20",
+        "flex h-full w-64 flex-col bg-gradient-to-b from-indigo-900/20 to-indigo-900/20 border-r border-indigo-500/20",
         className
       )}
     >
-      <div className="flex h-16 items-center justify-center border-b border-purple-500/20">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-magenta-400 bg-clip-text text-transparent">
+      <div className="flex h-16 items-center justify-center border-b border-indigo-500/20">
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-indigo-400 bg-clip-text text-transparent">
           Kavach
         </h1>
       </div>
@@ -51,8 +51,8 @@ export function Sidebar({ className }: SidebarProps) {
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-purple-500/20 text-purple-400"
-                  : "text-gray-400 hover:bg-purple-500/10 hover:text-gray-300"
+                  ? "bg-indigo-500/20 text-indigo-400"
+                  : "text-gray-400 hover:bg-indigo-500/10 hover:text-gray-300"
               )}
             >
               <item.icon className="h-5 w-5" />
@@ -62,9 +62,9 @@ export function Sidebar({ className }: SidebarProps) {
         })}
       </nav>
 
-      <div className="border-t border-purple-500/20 p-3">
+      <div className="border-t border-indigo-500/20 p-3">
         <button
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-400 transition-colors hover:bg-purple-500/10 hover:text-gray-300"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-400 transition-colors hover:bg-indigo-500/10 hover:text-gray-300"
           onClick={() => {
             // Handle logout
             window.location.href = "/api/auth/signout"

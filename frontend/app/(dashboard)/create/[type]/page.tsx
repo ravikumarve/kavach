@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { Sidebar } from "@/components/sidebar"
@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Loader2, FileText } from "lucide-react"
+import { ArrowLeft, Loader2, FileText, Download, CheckCircle } from "lucide-react"
 import { DocumentType } from "@/types/document"
 
 const documentTypeLabels: Record<DocumentType, string> = {
@@ -26,40 +26,12 @@ const documentTypeLabels: Record<DocumentType, string> = {
 }
 
 const states = [
-  "Andhra Pradesh",
-  "Arunachal Pradesh",
-  "Assam",
-  "Bihar",
-  "Chhattisgarh",
-  "Goa",
-  "Gujarat",
-  "Haryana",
-  "Himachal Pradesh",
-  "Jharkhand",
-  "Karnataka",
-  "Kerala",
-  "Madhya Pradesh",
-  "Maharashtra",
-  "Manipur",
-  "Meghalaya",
-  "Mizoram",
-  "Nagaland",
-  "Odisha",
-  "Punjab",
-  "Rajasthan",
-  "Sikkim",
-  "Tamil Nadu",
-  "Telangana",
-  "Tripura",
-  "Uttar Pradesh",
-  "Uttarakhand",
-  "West Bengal",
-  "Delhi",
-  "Mumbai",
-  "Kolkata",
-  "Chennai",
-  "Bangalore",
-  "Hyderabad",
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Delhi", "Mumbai", "Kolkata", "Chennai", "Bangalore", "Hyderabad",
 ]
 
 export default function CreateDocumentTypePage() {
@@ -67,26 +39,28 @@ export default function CreateDocumentTypePage() {
   const router = useRouter()
   const params = useParams()
   const docType = params.type as DocumentType
+  const previewRef = useRef<HTMLIFrameElement>(null)
 
   const [isGenerating, setIsGenerating] = useState(false)
+  const [generatedDoc, setGeneratedDoc] = useState<{
+    id: string
+    html: string
+    pdfPath: string
+  } | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const [formData, setFormData] = useState({
-    // Party A
     partyAName: "",
     partyAType: "individual",
     partyAAddress: "",
     partyAState: "",
     partyAPan: "",
     partyAGst: "",
-
-    // Party B
     partyBName: "",
     partyBType: "individual",
     partyBAddress: "",
     partyBState: "",
     partyBPan: "",
     partyBGst: "",
-
-    // Document Details
     title: "",
     effectiveDate: "",
     jurisdiction: "",
@@ -106,98 +80,134 @@ export default function CreateDocumentTypePage() {
     )
   }
 
-  if (!session) {
-    return null
-  }
+  if (!session) return null
 
-  const handleBack = () => {
-    router.push("/dashboard/create")
-  }
+  const handleBack = () => router.push("/create")
 
   const handleGenerate = async () => {
     setIsGenerating(true)
+    setError(null)
+    setGeneratedDoc(null)
 
     try {
-      // TODO: Call backend API to generate document
-      // const response = await fetch('/api/v1/generate/', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     doc_type: docType,
-      //     party_a: {
-      //       name: formData.partyAName,
-      //       type: formData.partyAType,
-      //       address: formData.partyAAddress,
-      //       state: formData.partyAState,
-      //       pan: formData.partyAPan,
-      //       gst: formData.partyAGst,
-      //     },
-      //     party_b: {
-      //       name: formData.partyBName,
-      //       type: formData.partyBType,
-      //       address: formData.partyBAddress,
-      //       state: formData.partyBState,
-      //       pan: formData.partyBPan,
-      //       gst: formData.partyBGst,
-      //     },
-      //     document_details: {
-      //       title: formData.title,
-      //       effective_date: formData.effectiveDate,
-      //       jurisdiction: formData.jurisdiction,
-      //       include_gst: formData.includeGst,
-      //       msme_protected: formData.msmeProtected,
-      //       additional_terms: formData.additionalTerms,
-      //     },
-      //   }),
-      // })
+      const payload = {
+        title: formData.title || `${documentTypeLabels[docType] || "Document"}`,
+        party_a_name: formData.partyAName,
+        party_a_type: formData.partyAType,
+        party_a_address: formData.partyAAddress,
+        party_a_state: formData.partyAState,
+        party_a_pan: formData.partyAPan,
+        party_a_gst: formData.partyAGst,
+        party_b_name: formData.partyBName,
+        party_b_type: formData.partyBType,
+        party_b_address: formData.partyBAddress,
+        party_b_state: formData.partyBState,
+        party_b_pan: formData.partyBPan,
+        party_b_gst: formData.partyBGst,
+        effective_date: formData.effectiveDate,
+        jurisdiction: formData.jurisdiction,
+        include_gst: formData.includeGst,
+        msme_protected: formData.msmeProtected,
+        additional_terms: formData.additionalTerms,
+      }
 
-      // if (response.ok) {
-      //   const data = await response.json()
-      //   router.push(`/dashboard/documents/${data.data.document.id}`)
-      // } else {
-      //   console.error('Failed to generate document')
-      // }
+      const response = await fetch(`/api/v1/generate/?doc_type=${docType}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user?.accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      })
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      router.push("/dashboard/documents")
-    } catch (error) {
-      console.error("Error generating document:", error)
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.detail || "Failed to generate document")
+      }
+
+      setGeneratedDoc({
+        id: data.data.document.id,
+        html: data.data.document.content_html,
+        pdfPath: data.data.document.pdf_path,
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Generation failed")
+      console.error("Generation error:", err)
     } finally {
       setIsGenerating(false)
+    }
+  }
+
+  const handleDownloadPDF = async () => {
+    if (!generatedDoc) return
+    try {
+      const response = await fetch(`/api/v1/export/pdf/${generatedDoc.id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session?.user?.accessToken}`,
+        },
+      })
+      if (!response.ok) throw new Error("Download failed")
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `${formData.title || "document"}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (err) {
+      console.error("Download error:", err)
     }
   }
 
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
-
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopBar />
-
         <main className="flex-1 overflow-y-auto p-8">
           <div className="mb-8">
-            <Button
-              variant="ghost"
-              onClick={handleBack}
-              className="mb-4 text-gray-400 hover:text-white"
-            >
+            <Button variant="ghost" onClick={handleBack} className="mb-4 text-gray-400 hover:text-white">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Document Types
             </Button>
             <h1 className="text-3xl font-bold mb-2 text-white">
               {documentTypeLabels[docType] || "Create Document"}
             </h1>
-            <p className="text-gray-400">
-              Fill in the details below to generate your document
-            </p>
+            <p className="text-gray-400">Fill in the details below to generate your document</p>
           </div>
+
+          {/* Error Banner */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-900/20 border border-red-500/30 rounded-lg text-red-400">
+              {error}
+            </div>
+          )}
+
+          {/* Success Banner */}
+          {generatedDoc && (
+            <div className="mb-6 p-4 bg-green-900/20 border border-green-500/30 rounded-lg flex items-center justify-between">
+              <div className="flex items-center gap-2 text-green-400">
+                <CheckCircle className="h-5 w-5" />
+                <span>Document generated successfully!</span>
+              </div>
+              <Button
+                onClick={handleDownloadPDF}
+                size="sm"
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download PDF
+              </Button>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Form */}
-            <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20">
+            <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20">
               <CardHeader>
                 <CardTitle className="text-white">Document Details</CardTitle>
                 <CardDescription className="text-gray-400">
@@ -207,30 +217,16 @@ export default function CreateDocumentTypePage() {
               <CardContent className="space-y-6">
                 {/* Party A */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">Party A</h3>
+                  <h3 className="text-lg font-semibold text-white">Party A (You)</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="partyAName">Name</Label>
-                      <Input
-                        id="partyAName"
-                        value={formData.partyAName}
-                        onChange={(e) =>
-                          setFormData({ ...formData, partyAName: e.target.value })
-                        }
-                        placeholder="Enter name"
-                      />
+                      <Input id="partyAName" value={formData.partyAName} onChange={(e) => setFormData({ ...formData, partyAName: e.target.value })} placeholder="Enter name" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="partyAType">Type</Label>
-                      <Select
-                        value={formData.partyAType}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, partyAType: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
+                      <Select value={formData.partyAType} onValueChange={(v) => setFormData({ ...formData, partyAType: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="individual">Individual</SelectItem>
                           <SelectItem value="company">Company</SelectItem>
@@ -239,58 +235,25 @@ export default function CreateDocumentTypePage() {
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="partyAAddress">Address</Label>
-                      <Textarea
-                        id="partyAAddress"
-                        value={formData.partyAAddress}
-                        onChange={(e) =>
-                          setFormData({ ...formData, partyAAddress: e.target.value })
-                        }
-                        placeholder="Enter address"
-                        rows={2}
-                      />
+                      <Textarea id="partyAAddress" value={formData.partyAAddress} onChange={(e) => setFormData({ ...formData, partyAAddress: e.target.value })} placeholder="Enter address" rows={2} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="partyAState">State</Label>
-                      <Select
-                        value={formData.partyAState}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, partyAState: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select state" />
-                        </SelectTrigger>
+                      <Select value={formData.partyAState} onValueChange={(v) => setFormData({ ...formData, partyAState: v })}>
+                        <SelectTrigger><SelectValue placeholder="Select state" /></SelectTrigger>
                         <SelectContent>
-                          {states.map((state) => (
-                            <SelectItem key={state} value={state.toLowerCase()}>
-                              {state}
-                            </SelectItem>
-                          ))}
+                          {states.map((s) => (<SelectItem key={s} value={s.toLowerCase()}>{s}</SelectItem>))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="partyAPan">PAN (Optional)</Label>
-                      <Input
-                        id="partyAPan"
-                        value={formData.partyAPan}
-                        onChange={(e) =>
-                          setFormData({ ...formData, partyAPan: e.target.value })
-                        }
-                        placeholder="Enter PAN"
-                      />
+                      <Input id="partyAPan" value={formData.partyAPan} onChange={(e) => setFormData({ ...formData, partyAPan: e.target.value })} placeholder="Enter PAN" />
                     </div>
                     {formData.partyAType === "company" && (
                       <div className="space-y-2">
                         <Label htmlFor="partyAGst">GST (Optional)</Label>
-                        <Input
-                          id="partyAGst"
-                          value={formData.partyAGst}
-                          onChange={(e) =>
-                            setFormData({ ...formData, partyAGst: e.target.value })
-                          }
-                          placeholder="Enter GST"
-                        />
+                        <Input id="partyAGst" value={formData.partyAGst} onChange={(e) => setFormData({ ...formData, partyAGst: e.target.value })} placeholder="Enter GST" />
                       </div>
                     )}
                   </div>
@@ -298,30 +261,16 @@ export default function CreateDocumentTypePage() {
 
                 {/* Party B */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">Party B</h3>
+                  <h3 className="text-lg font-semibold text-white">Party B (Counterparty)</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="partyBName">Name</Label>
-                      <Input
-                        id="partyBName"
-                        value={formData.partyBName}
-                        onChange={(e) =>
-                          setFormData({ ...formData, partyBName: e.target.value })
-                        }
-                        placeholder="Enter name"
-                      />
+                      <Input id="partyBName" value={formData.partyBName} onChange={(e) => setFormData({ ...formData, partyBName: e.target.value })} placeholder="Enter name" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="partyBType">Type</Label>
-                      <Select
-                        value={formData.partyBType}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, partyBType: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
+                      <Select value={formData.partyBType} onValueChange={(v) => setFormData({ ...formData, partyBType: v })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="individual">Individual</SelectItem>
                           <SelectItem value="company">Company</SelectItem>
@@ -330,58 +279,25 @@ export default function CreateDocumentTypePage() {
                     </div>
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="partyBAddress">Address</Label>
-                      <Textarea
-                        id="partyBAddress"
-                        value={formData.partyBAddress}
-                        onChange={(e) =>
-                          setFormData({ ...formData, partyBAddress: e.target.value })
-                        }
-                        placeholder="Enter address"
-                        rows={2}
-                      />
+                      <Textarea id="partyBAddress" value={formData.partyBAddress} onChange={(e) => setFormData({ ...formData, partyBAddress: e.target.value })} placeholder="Enter address" rows={2} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="partyBState">State</Label>
-                      <Select
-                        value={formData.partyBState}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, partyBState: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select state" />
-                        </SelectTrigger>
+                      <Select value={formData.partyBState} onValueChange={(v) => setFormData({ ...formData, partyBState: v })}>
+                        <SelectTrigger><SelectValue placeholder="Select state" /></SelectTrigger>
                         <SelectContent>
-                          {states.map((state) => (
-                            <SelectItem key={state} value={state.toLowerCase()}>
-                              {state}
-                            </SelectItem>
-                          ))}
+                          {states.map((s) => (<SelectItem key={s} value={s.toLowerCase()}>{s}</SelectItem>))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="partyBPan">PAN (Optional)</Label>
-                      <Input
-                        id="partyBPan"
-                        value={formData.partyBPan}
-                        onChange={(e) =>
-                          setFormData({ ...formData, partyBPan: e.target.value })
-                        }
-                        placeholder="Enter PAN"
-                      />
+                      <Input id="partyBPan" value={formData.partyBPan} onChange={(e) => setFormData({ ...formData, partyBPan: e.target.value })} placeholder="Enter PAN" />
                     </div>
                     {formData.partyBType === "company" && (
                       <div className="space-y-2">
                         <Label htmlFor="partyBGst">GST (Optional)</Label>
-                        <Input
-                          id="partyBGst"
-                          value={formData.partyBGst}
-                          onChange={(e) =>
-                            setFormData({ ...formData, partyBGst: e.target.value })
-                          }
-                          placeholder="Enter GST"
-                        />
+                        <Input id="partyBGst" value={formData.partyBGst} onChange={(e) => setFormData({ ...formData, partyBGst: e.target.value })} placeholder="Enter GST" />
                       </div>
                     )}
                   </div>
@@ -389,156 +305,83 @@ export default function CreateDocumentTypePage() {
 
                 {/* Document Details */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">
-                    Document Details
-                  </h3>
+                  <h3 className="text-lg font-semibold text-white">Document Details</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2 md:col-span-2">
                       <Label htmlFor="title">Document Title</Label>
-                      <Input
-                        id="title"
-                        value={formData.title}
-                        onChange={(e) =>
-                          setFormData({ ...formData, title: e.target.value })
-                        }
-                        placeholder="Enter document title"
-                      />
+                      <Input id="title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="Enter document title" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="effectiveDate">Effective Date</Label>
-                      <Input
-                        id="effectiveDate"
-                        type="date"
-                        value={formData.effectiveDate}
-                        onChange={(e) =>
-                          setFormData({ ...formData, effectiveDate: e.target.value })
-                        }
-                      />
+                      <Input id="effectiveDate" type="date" value={formData.effectiveDate} onChange={(e) => setFormData({ ...formData, effectiveDate: e.target.value })} />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="jurisdiction">Jurisdiction</Label>
-                      <Select
-                        value={formData.jurisdiction}
-                        onValueChange={(value) =>
-                          setFormData({ ...formData, jurisdiction: value })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select jurisdiction" />
-                        </SelectTrigger>
+                      <Select value={formData.jurisdiction} onValueChange={(v) => setFormData({ ...formData, jurisdiction: v })}>
+                        <SelectTrigger><SelectValue placeholder="Select jurisdiction" /></SelectTrigger>
                         <SelectContent>
-                          {states.map((state) => (
-                            <SelectItem key={state} value={state.toLowerCase()}>
-                              {state}
-                            </SelectItem>
-                          ))}
+                          {states.map((s) => (<SelectItem key={s} value={s.toLowerCase()}>{s}</SelectItem>))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="additionalTerms">
-                        Additional Terms (Optional)
-                      </Label>
-                      <Textarea
-                        id="additionalTerms"
-                        value={formData.additionalTerms}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            additionalTerms: e.target.value,
-                          })
-                        }
-                        placeholder="Enter any additional terms or conditions"
-                        rows={3}
-                      />
+                      <Label htmlFor="additionalTerms">Additional Terms (Optional)</Label>
+                      <Textarea id="additionalTerms" value={formData.additionalTerms} onChange={(e) => setFormData({ ...formData, additionalTerms: e.target.value })} placeholder="Enter any additional terms or conditions" rows={3} />
                     </div>
                   </div>
                 </div>
 
-                <Button
-                  onClick={handleGenerate}
-                  disabled={isGenerating}
-                  className="w-full bg-purple-500 hover:bg-purple-600"
-                >
+                <Button onClick={handleGenerate} disabled={isGenerating} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
                   {isGenerating ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Generating Document...
-                    </>
+                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating Document...</>
                   ) : (
-                    <>
-                      <FileText className="h-4 w-4 mr-2" />
-                      Generate Document
-                    </>
+                    <><FileText className="h-4 w-4 mr-2" /> Generate Document</>
                   )}
                 </Button>
               </CardContent>
             </Card>
 
-            {/* Preview */}
-            <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20">
+            {/* Live Preview */}
+            <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20">
               <CardHeader>
-                <CardTitle className="text-white">Document Preview</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Preview of your document
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-white">Live Preview</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      {generatedDoc ? "AI-generated document preview" : "Preview will appear here after generation"}
+                    </CardDescription>
+                  </div>
+                  {generatedDoc && (
+                    <Button onClick={handleDownloadPDF} size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                      <Download className="h-4 w-4 mr-2" />
+                      PDF
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="bg-white rounded-lg p-6 min-h-[500px] text-gray-900">
-                  <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold mb-2">
-                      {formData.title || "DOCUMENT TITLE"}
-                    </h2>
-                    <p className="text-sm text-gray-600">
-                      {documentTypeLabels[docType]}
-                    </p>
+                {generatedDoc ? (
+                  <div className="bg-white rounded-lg overflow-hidden" style={{ height: "600px" }}>
+                    <iframe
+                      ref={previewRef}
+                      srcDoc={generatedDoc.html}
+                      className="w-full h-full"
+                      style={{ border: "none" }}
+                      title="Document Preview"
+                      sandbox="allow-same-origin"
+                    />
                   </div>
-
-                  <div className="space-y-4 text-sm">
-                    <div>
-                      <strong>Party A:</strong>
-                      <p className="mt-1">
-                        {formData.partyAName || "Party A Name"}
-                        <br />
-                        {formData.partyAAddress || "Party A Address"}
-                        <br />
-                        {formData.partyAState || "State"}
+                ) : (
+                  <div className="bg-white/5 rounded-lg p-6 min-h-[500px] flex items-center justify-center">
+                    <div className="text-center">
+                      <FileText className="h-16 w-16 text-indigo-400/50 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-gray-400 mb-2">No Document Yet</h3>
+                      <p className="text-gray-500 text-sm max-w-md">
+                        Fill in the form and click "Generate Document" to see a live preview of your AI-generated legal document here.
                       </p>
                     </div>
-
-                    <div>
-                      <strong>Party B:</strong>
-                      <p className="mt-1">
-                        {formData.partyBName || "Party B Name"}
-                        <br />
-                        {formData.partyBAddress || "Party B Address"}
-                        <br />
-                        {formData.partyBState || "State"}
-                      </p>
-                    </div>
-
-                    <div>
-                      <strong>Effective Date:</strong>
-                      <p className="mt-1">
-                        {formData.effectiveDate || "Not specified"}
-                      </p>
-                    </div>
-
-                    <div>
-                      <strong>Jurisdiction:</strong>
-                      <p className="mt-1">
-                        {formData.jurisdiction || "Not specified"}
-                      </p>
-                    </div>
-
-                    {formData.additionalTerms && (
-                      <div>
-                        <strong>Additional Terms:</strong>
-                        <p className="mt-1">{formData.additionalTerms}</p>
-                      </div>
-                    )}
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           </div>

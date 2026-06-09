@@ -65,11 +65,11 @@ export function DocumentCard({
   }
 
   return (
-    <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20 hover:border-purple-500/40 transition-all">
+    <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20 hover:border-indigo-500/40 transition-all">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-purple-400" />
+            <FileText className="h-5 w-5 text-indigo-400" />
             <CardTitle className="text-lg text-white">{title}</CardTitle>
           </div>
           <span

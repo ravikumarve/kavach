@@ -7,7 +7,7 @@ import { Sidebar } from "@/components/sidebar"
 import { TopBar } from "@/components/top-bar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { FileText, Briefcase, Home, Building, User, Handshake, FileCheck, UserCheck } from "lucide-react"
+import { FileText, Briefcase, Home, Building, User, Users, FileCheck, UserCheck } from "lucide-react"
 import { DocumentType } from "@/types/document"
 
 const documentTypes = [
@@ -50,7 +50,7 @@ const documentTypes = [
     type: DocumentType.PARTNERSHIP_DEED,
     title: "Partnership Deed",
     description: "Define partnership terms and profit-sharing arrangements",
-    icon: Handshake,
+    icon: Users,
     category: "Business",
   },
   {
@@ -91,7 +91,7 @@ export default function CreateDocumentPage() {
 
   const handleSelectType = (type: DocumentType) => {
     setSelectedType(type)
-    router.push(`/dashboard/create/${type}`)
+    router.push(`/create/${type}`)
   }
 
   return (
@@ -117,15 +117,15 @@ export default function CreateDocumentPage() {
               return (
                 <Card
                   key={doc.type}
-                  className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer group"
+                  className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20 hover:border-indigo-500/40 transition-all cursor-pointer group"
                   onClick={() => handleSelectType(doc.type)}
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between mb-2">
-                      <div className="p-3 bg-purple-500/20 rounded-lg group-hover:bg-purple-500/30 transition-colors">
-                        <Icon className="h-6 w-6 text-purple-400" />
+                      <div className="p-3 bg-indigo-500/20 rounded-lg group-hover:bg-indigo-500/30 transition-colors">
+                        <Icon className="h-6 w-6 text-indigo-400" />
                       </div>
-                      <span className="text-xs text-gray-500 bg-purple-500/10 px-2 py-1 rounded-full">
+                      <span className="text-xs text-gray-500 bg-indigo-500/10 px-2 py-1 rounded-full">
                         {doc.category}
                       </span>
                     </div>
@@ -139,7 +139,7 @@ export default function CreateDocumentPage() {
                   <CardContent>
                     <Button
                       variant="outline"
-                      className="w-full bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                      className="w-full bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                     >
                       Create Document
                     </Button>

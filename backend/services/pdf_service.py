@@ -65,10 +65,16 @@ class PDFService:
             </html>
             """
 
-            HTML(string=full_html).write_pdf(
-                output_path,
-                stylesheets=[CSS(string=css_content)]
-            )
+            # Write HTML to temp file for WeasyPrint compatibility
+            temp_html_path = os.path.join(self.pdf_dir, f"temp_{document_id}.html")
+            with open(temp_html_path, 'w', encoding='utf-8') as f:
+                f.write(full_html)
+            
+            HTML(filename=temp_html_path).write_pdf(target=output_path)
+            
+            # Clean up temp file
+            if os.path.exists(temp_html_path):
+                os.remove(temp_html_path)
 
             return output_path
 

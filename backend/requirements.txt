@@ -21,11 +21,11 @@ pydantic-settings==2.1.0
 pydantic[email]==2.5.0
 
 # AI Engine
-groq==0.4.0
+groq==1.4.0
 openai>=1.0.0  # For NVIDIA NIM API compatibility
 
 # PDF Generation
-weasyprint==59.0
+weasyprint>=59.0
 
 # DOCX Generation
 python-docx==1.1.0

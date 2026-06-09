@@ -20,12 +20,12 @@ export function StatCard({
   trend,
 }: StatCardProps) {
   return (
-    <Card className="bg-gradient-to-br from-purple-900/20 to-magenta-900/20 border-purple-500/20 hover:border-purple-500/40 transition-all">
+    <Card className="bg-gradient-to-br from-indigo-900/20 to-indigo-900/20 border-indigo-500/20 hover:border-indigo-500/40 transition-all">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-gray-300">
           {title}
         </CardTitle>
-        <Icon className="h-4 w-4 text-purple-400" />
+        <Icon className="h-4 w-4 text-indigo-400" />
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold text-white">{value}</div>

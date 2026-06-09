@@ -35,8 +35,8 @@ export default function DashboardPage() {
     return null
   }
 
-  const documentsUsed = session.user.documents_used || 0
-  const documentsLimit = session.user.documents_limit || 3
+  const documentsUsed = 0
+  const documentsLimit = session.user.plan === "free" ? 3 : session.user.plan === "starter" ? 20 : 999
   const availableDocuments = documentsLimit - documentsUsed
 
   return (
@@ -80,17 +80,17 @@ export default function DashboardPage() {
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border border-purple-500/20 rounded-lg p-6">
+          <div className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border border-indigo-500/20 rounded-lg p-6">
             <h3 className="text-xl font-semibold mb-4 text-white">
               Quick Actions
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Link href="/dashboard/create">
+              <Link href="/create">
                 <Button
                   variant="outline"
-                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                 >
-                  <FileText className="h-6 w-6 text-purple-400" />
+                  <FileText className="h-6 w-6 text-indigo-400" />
                   <div className="text-left">
                     <div className="font-medium text-white">Create Document</div>
                     <div className="text-sm text-gray-400">
@@ -100,12 +100,12 @@ export default function DashboardPage() {
                 </Button>
               </Link>
 
-              <Link href="/dashboard/documents">
+              <Link href="/documents">
                 <Button
                   variant="outline"
-                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                 >
-                  <FolderOpen className="h-6 w-6 text-purple-400" />
+                  <FolderOpen className="h-6 w-6 text-indigo-400" />
                   <div className="text-left">
                     <div className="font-medium text-white">My Documents</div>
                     <div className="text-sm text-gray-400">
@@ -115,12 +115,12 @@ export default function DashboardPage() {
                 </Button>
               </Link>
 
-              <Link href="/dashboard/templates">
+              <Link href="/templates">
                 <Button
                   variant="outline"
-                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                 >
-                  <LayoutTemplate className="h-6 w-6 text-purple-400" />
+                  <LayoutTemplate className="h-6 w-6 text-indigo-400" />
                   <div className="text-left">
                     <div className="font-medium text-white">Templates</div>
                     <div className="text-sm text-gray-400">
@@ -130,12 +130,12 @@ export default function DashboardPage() {
                 </Button>
               </Link>
 
-              <Link href="/dashboard/settings">
+              <Link href="/settings">
                 <Button
                   variant="outline"
-                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                  className="w-full h-auto p-4 flex flex-col items-start gap-2 bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                 >
-                  <Settings className="h-6 w-6 text-purple-400" />
+                  <Settings className="h-6 w-6 text-indigo-400" />
                   <div className="text-left">
                     <div className="font-medium text-white">Settings</div>
                     <div className="text-sm text-gray-400">

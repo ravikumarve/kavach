@@ -5,7 +5,7 @@ Clauses Router - Clause Management and Editing
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 import uuid
 from datetime import datetime
 
@@ -22,7 +22,7 @@ router = APIRouter()
 @router.get("/library")
 async def get_clause_library(
     current_user: User = Depends(get_current_user)
-) -> Dict[str, str]:
+) -> Dict[str, Any]:
     """
     Get all available clauses from the clause library
 
@@ -52,7 +52,7 @@ async def get_clause_library(
 async def get_clause(
     clause_type: str,
     current_user: User = Depends(get_current_user)
-) -> Dict[str, str]:
+) -> Dict[str, Any]:
     """
     Get a specific clause from the library
 
@@ -92,7 +92,7 @@ async def get_clause(
 async def get_recommended_clauses(
     doc_type: str,
     current_user: User = Depends(get_current_user)
-) -> Dict[str, List[str]]:
+) -> Dict[str, Any]:
     """
     Get recommended clauses for a specific document type
 
@@ -367,7 +367,7 @@ async def get_gst_clause(
     is_taxable: bool,
     is_reverse_charge: bool = False,
     current_user: User = Depends(get_current_user)
-) -> Dict[str, str]:
+) -> Dict[str, Any]:
     """
     Get appropriate GST clause based on taxability
 

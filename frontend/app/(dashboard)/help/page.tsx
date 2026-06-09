@@ -117,10 +117,10 @@ export default function HelpPage() {
 
           {/* Quick Actions */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
+            <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20 hover:border-indigo-500/40 transition-all cursor-pointer">
               <CardHeader>
-                <div className="p-3 bg-purple-500/20 rounded-lg w-fit mb-2">
-                  <BookOpen className="h-6 w-6 text-purple-400" />
+                <div className="p-3 bg-indigo-500/20 rounded-lg w-fit mb-2">
+                  <BookOpen className="h-6 w-6 text-indigo-400" />
                 </div>
                 <CardTitle className="text-white">Documentation</CardTitle>
                 <CardDescription className="text-gray-400">
@@ -130,17 +130,17 @@ export default function HelpPage() {
               <CardContent>
                 <Button
                   variant="outline"
-                  className="w-full bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                  className="w-full bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                 >
                   View Docs
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
+            <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20 hover:border-indigo-500/40 transition-all cursor-pointer">
               <CardHeader>
-                <div className="p-3 bg-purple-500/20 rounded-lg w-fit mb-2">
-                  <Video className="h-6 w-6 text-purple-400" />
+                <div className="p-3 bg-indigo-500/20 rounded-lg w-fit mb-2">
+                  <Video className="h-6 w-6 text-indigo-400" />
                 </div>
                 <CardTitle className="text-white">Video Tutorials</CardTitle>
                 <CardDescription className="text-gray-400">
@@ -150,17 +150,17 @@ export default function HelpPage() {
               <CardContent>
                 <Button
                   variant="outline"
-                  className="w-full bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                  className="w-full bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                 >
                   Watch Videos
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer">
+            <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20 hover:border-indigo-500/40 transition-all cursor-pointer">
               <CardHeader>
-                <div className="p-3 bg-purple-500/20 rounded-lg w-fit mb-2">
-                  <Mail className="h-6 w-6 text-purple-400" />
+                <div className="p-3 bg-indigo-500/20 rounded-lg w-fit mb-2">
+                  <Mail className="h-6 w-6 text-indigo-400" />
                 </div>
                 <CardTitle className="text-white">Contact Support</CardTitle>
                 <CardDescription className="text-gray-400">
@@ -170,7 +170,7 @@ export default function HelpPage() {
               <CardContent>
                 <Button
                   variant="outline"
-                  className="w-full bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                  className="w-full bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                 >
                   Contact Us
                 </Button>
@@ -191,12 +191,12 @@ export default function HelpPage() {
               return (
                 <Card
                   key={category.title}
-                  className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20"
+                  className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20"
                 >
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 bg-purple-500/20 rounded-lg">
-                        <Icon className="h-5 w-5 text-purple-400" />
+                      <div className="p-2 bg-indigo-500/20 rounded-lg">
+                        <Icon className="h-5 w-5 text-indigo-400" />
                       </div>
                       <CardTitle className="text-white">{category.title}</CardTitle>
                     </div>
@@ -207,7 +207,7 @@ export default function HelpPage() {
                         <li key={index}>
                           <a
                             href="#"
-                            className="block p-3 rounded-lg bg-purple-500/5 hover:bg-purple-500/10 transition-colors"
+                            className="block p-3 rounded-lg bg-indigo-500/5 hover:bg-indigo-500/10 transition-colors"
                           >
                             <h4 className="text-sm font-medium text-white mb-1">
                               {item.title}
@@ -230,10 +230,10 @@ export default function HelpPage() {
             <h2 className="text-2xl font-bold mb-4 text-white">
               Frequently Asked Questions
             </h2>
-            <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20">
+            <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20">
               <CardContent className="pt-6">
                 <div className="space-y-4">
-                  <div className="p-4 rounded-lg bg-purple-500/5">
+                  <div className="p-4 rounded-lg bg-indigo-500/5">
                     <h4 className="text-sm font-medium text-white mb-2">
                       How do I create a new document?
                     </h4>
@@ -244,7 +244,7 @@ export default function HelpPage() {
                       automatically.
                     </p>
                   </div>
-                  <div className="p-4 rounded-lg bg-purple-500/5">
+                  <div className="p-4 rounded-lg bg-indigo-500/5">
                     <h4 className="text-sm font-medium text-white mb-2">
                       What document types are available?
                     </h4>
@@ -254,7 +254,7 @@ export default function HelpPage() {
                       Deed, Service Agreement, and Consultant Agreement.
                     </p>
                   </div>
-                  <div className="p-4 rounded-lg bg-purple-500/5">
+                  <div className="p-4 rounded-lg bg-indigo-500/5">
                     <h4 className="text-sm font-medium text-white mb-2">
                       How do I upgrade my plan?
                     </h4>
@@ -264,7 +264,7 @@ export default function HelpPage() {
                       will be upgraded immediately.
                     </p>
                   </div>
-                  <div className="p-4 rounded-lg bg-purple-500/5">
+                  <div className="p-4 rounded-lg bg-indigo-500/5">
                     <h4 className="text-sm font-medium text-white mb-2">
                       Can I download documents in different formats?
                     </h4>
@@ -284,26 +284,26 @@ export default function HelpPage() {
             <h2 className="text-2xl font-bold mb-4 text-white">
               Still need help?
             </h2>
-            <Card className="bg-gradient-to-br from-purple-900/10 to-magenta-900/10 border-purple-500/20">
+            <Card className="bg-gradient-to-br from-indigo-900/10 to-indigo-900/10 border-indigo-500/20">
               <CardContent className="pt-6">
                 <div className="flex flex-col md:flex-row gap-4">
                   <Button
                     variant="outline"
-                    className="flex-1 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                    className="flex-1 bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                   >
                     <Mail className="h-4 w-4 mr-2" />
                     Email Support
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                    className="flex-1 bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                   >
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Live Chat
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1 bg-purple-500/10 border-purple-500/20 hover:bg-purple-500/20"
+                    className="flex-1 bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20"
                   >
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Community Forum

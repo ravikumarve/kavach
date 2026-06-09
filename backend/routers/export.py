@@ -11,7 +11,7 @@ import uuid
 import os
 
 from database import get_db
-from models import User, Document, Subscription
+from models import User, Document, Subscription, SubscriptionStatusEnum
 from routers.auth import get_current_user
 from services.pdf_service import pdf_service
 
@@ -50,18 +50,18 @@ async def export_pdf(
                 detail="Document not found"
             )
 
-        # Check if user has paid plan (no watermark)
+        # Check if user has paid plan (no watermark for paid plans)
         subscription = db.query(Subscription).filter(
             Subscription.user_id == current_user.id,
-            Subscription.is_active == True
+            Subscription.status == SubscriptionStatusEnum.ACTIVE
         ).first()
 
-        is_watermarked = subscription is None or subscription.plan == "free"
+        is_watermarked = subscription is None or subscription.plan.value == "free"
 
         # Generate PDF
         pdf_path = await pdf_service.generate_pdf(
             document_id=str(document.id),
-            html_content=document.html_content,
+            html_content=document.content_html,
             title=document.title,
             is_watermarked=is_watermarked
         )
@@ -120,13 +120,13 @@ async def export_docx(
                 detail="Document not found"
             )
 
-        # Check if user has paid plan (no watermark)
+        # Check if user has paid plan (no watermark for paid plans)
         subscription = db.query(Subscription).filter(
             Subscription.user_id == current_user.id,
-            Subscription.is_active == True
+            Subscription.status == SubscriptionStatusEnum.ACTIVE
         ).first()
 
-        is_watermarked = subscription is None or subscription.plan == "free"
+        is_watermarked = subscription is None or subscription.plan.value == "free"
 
         # Generate DOCX using python-docx
         from docx import Document
@@ -143,7 +143,7 @@ async def export_docx(
         # Add content
         # Parse HTML content and convert to DOCX
         from bs4 import BeautifulSoup
-        soup = BeautifulSoup(document.html_content, 'html.parser')
+        soup = BeautifulSoup(document.content_html, 'html.parser')
 
         for element in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'li']):
             if element.name.startswith('h'):

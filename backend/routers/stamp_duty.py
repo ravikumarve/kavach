@@ -20,7 +20,7 @@ router = APIRouter()
 @router.get("/states")
 async def get_all_states(
     current_user: User = Depends(get_current_user)
-) -> Dict[str, List[str]]:
+) -> Dict[str, Any]:
     """
     Get list of all supported states
 
@@ -176,7 +176,7 @@ async def compare_states(
     doc_type: str,
     document_value: float,
     current_user: User = Depends(get_current_user)
-) -> Dict[str, List[Dict]]:
+) -> Dict[str, Any]:
     """
     Compare stamp duty rates across all states for a document type
 

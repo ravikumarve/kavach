@@ -6,10 +6,11 @@ Authentication Router
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
+from argon2 import PasswordHasher
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from typing import Dict, Any
+from pydantic import BaseModel, EmailStr
 import uuid
 
 from database import get_db
@@ -17,12 +18,31 @@ from models import User
 from config import settings
 
 
+# Pydantic models for request/response
+class UserRegister(BaseModel):
+    email: EmailStr
+    password: str
+    full_name: str = None
+    company_name: str = None
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
 # Create router
 router = APIRouter()
 
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Password hashing with Argon2
+ph = PasswordHasher(
+    time_cost=3,        # Number of iterations
+    memory_cost=65536,   # Memory usage in KiB
+    parallelism=4,      # Number of parallel threads
+    hash_len=32,        # Hash length
+    salt_len=16         # Salt length
+)
 
 
 # OAuth2 scheme
@@ -31,12 +51,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against a hash."""
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        ph.verify(hashed_password, plain_password)
+        return True
+    except:
+        return False
 
 
 def get_password_hash(password: str) -> str:
     """Hash a password."""
-    return pwd_context.hash(password)
+    return ph.hash(password)
 
 
 def create_access_token(data: Dict[str, Any], expires_delta: timedelta = None) -> str:
@@ -77,30 +101,27 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 
 @router.post("/register", response_model=Dict[str, Any])
 async def register(
-    email: str,
-    password: str,
-    full_name: str = None,
-    company_name: str = None,
+    user_data: UserRegister,
     db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """
     Register a new user.
     """
     # Check if user already exists
-    existing_user = db.query(User).filter(User.email == email).first()
+    existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
-    
+
     # Create new user
-    hashed_password = get_password_hash(password)
+    hashed_password = get_password_hash(user_data.password)
     new_user = User(
-        email=email,
+        email=user_data.email,
         hashed_password=hashed_password,
-        full_name=full_name,
-        company_name=company_name,
+        full_name=user_data.full_name,
+        company_name=user_data.company_name,
         plan="free"
     )
     
@@ -130,15 +151,15 @@ async def register(
 
 @router.post("/login", response_model=Dict[str, Any])
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    user_data: UserLogin,
     db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """
     Login a user.
     """
     # Find user by email
-    user = db.query(User).filter(User.email == form_data.username).first()
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    user = db.query(User).filter(User.email == user_data.email).first()
+    if not user or not verify_password(user_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -179,12 +200,10 @@ async def get_me(current_user: User = Depends(get_current_user)) -> Dict[str, An
                 "full_name": current_user.full_name,
                 "company_name": current_user.company_name,
                 "phone": current_user.phone,
-                "state": current_user.state,
                 "plan": current_user.plan,
                 "is_active": current_user.is_active,
-                "is_verified": current_user.is_verified,
                 "created_at": current_user.created_at.isoformat(),
-                "updated_at": current_user.updated_at.isoformat()
+                "updated_at": current_user.updated_at.isoformat() if current_user.updated_at else None
             }
         }
     }

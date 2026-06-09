@@ -3,10 +3,11 @@ Kavach - AI Legal Document Engine for India
 AI Engine Service - Groq API + NVIDIA NIM API Integration
 """
 
-from groq import Groq
 from openai import OpenAI  # For NVIDIA NIM API compatibility
 from typing import Dict, Any, Optional
 import os
+import asyncio
+import httpx
 from config import settings
 
 
@@ -15,8 +16,6 @@ class AIEngine:
     
     def __init__(self):
         """Initialize AI clients"""
-        # Groq API client
-        self.groq_client = Groq(api_key=settings.GROQ_API_KEY)
         self.groq_model = settings.GROQ_MODEL
         self.groq_temperature = settings.GROQ_TEMPERATURE
         self.groq_max_tokens = settings.GROQ_MAX_TOKENS
@@ -126,17 +125,19 @@ class AIEngine:
     ) -> str:
         """Generate document using NVIDIA NIM API backup model"""
         try:
-            response = self.nim_client_backup.chat.completions.create(
-                model=self.nim_model_backup,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                temperature=self.nim_temperature_backup,
-                max_tokens=self.nim_max_tokens_backup,
-                stream=False
-            )
+            def _backup_call():
+                return self.nim_client_backup.chat.completions.create(
+                    model=self.nim_model_backup,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    temperature=self.nim_temperature_backup,
+                    max_tokens=self.nim_max_tokens_backup,
+                    stream=False
+                )
 
+            response = await asyncio.to_thread(_backup_call)
             content = response.choices[0].message.content
             return content
 
@@ -148,24 +149,45 @@ class AIEngine:
         system_prompt: str,
         user_prompt: str
     ) -> str:
-        """Generate document using Groq API"""
+        """Generate document using Groq API via direct HTTP"""
+        import traceback
+        _log = __import__('logging').getLogger(__name__)
         try:
-            response = self.groq_client.chat.completions.create(
-                model=self.groq_model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                temperature=self.groq_temperature,
-                max_tokens=self.groq_max_tokens,
-                stream=False
-            )
+            _log.info(f"Groq API key loaded: {settings.GROQ_API_KEY[:10] if settings.GROQ_API_KEY else 'EMPTY'}...")
+            _log.info(f"Groq model: {self.groq_model}")
             
-            content = response.choices[0].message.content
-            return content
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                request_body = {
+                    "model": self.groq_model,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    "temperature": self.groq_temperature,
+                    "max_tokens": self.groq_max_tokens,
+                    "stream": False
+                }
+                _log.info(f"Sending request to Groq API, prompt length: {len(user_prompt)}")
+                
+                response = await client.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {settings.GROQ_API_KEY}",
+                        "Content-Type": "application/json"
+                    },
+                    json=request_body
+                )
+                
+                _log.info(f"Groq API response status: {response.status_code}")
+                response.raise_for_status()
+                data = response.json()
+                content = data["choices"][0]["message"]["content"]
+                return content
             
         except Exception as e:
-            raise Exception(f"Groq API generation failed: {str(e)}")
+            _log.error(f"Groq API error: {type(e).__name__}: {e}")
+            _log.error(traceback.format_exc())
+            raise Exception(f"Groq API generation failed: {type(e).__name__}: {str(e)}")
     
     async def _generate_with_nim(
         self,
@@ -174,34 +196,38 @@ class AIEngine:
     ) -> str:
         """Generate document using NVIDIA NIM API"""
         try:
-            response = self.nim_client.chat.completions.create(
-                model=self.nim_model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                temperature=self.nim_temperature,
-                max_tokens=self.nim_max_tokens,
-                stream=False
-            )
+            def _sync_call():
+                return self.nim_client.chat.completions.create(
+                    model=self.nim_model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    temperature=self.nim_temperature,
+                    max_tokens=self.nim_max_tokens,
+                    stream=False
+                )
             
+            response = await asyncio.to_thread(_sync_call)
             content = response.choices[0].message.content
             return content
             
         except Exception as e:
             # Try backup model
             try:
-                response = self.nim_client_backup.chat.completions.create(
-                    model=self.nim_model_backup,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt}
-                    ],
-                    temperature=self.nim_temperature_backup,
-                    max_tokens=self.nim_max_tokens_backup,
-                    stream=False
-                )
+                def _backup_call():
+                    return self.nim_client_backup.chat.completions.create(
+                        model=self.nim_model_backup,
+                        messages=[
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt}
+                        ],
+                        temperature=self.nim_temperature_backup,
+                        max_tokens=self.nim_max_tokens_backup,
+                        stream=False
+                    )
                 
+                response = await asyncio.to_thread(_backup_call)
                 content = response.choices[0].message.content
                 return content
                 

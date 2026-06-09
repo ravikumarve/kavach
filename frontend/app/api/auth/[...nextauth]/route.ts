@@ -11,7 +11,7 @@ const loginSchema = z.object({
 
 async function loginUser(email: string, password: string) {
   try {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const response = await fetch(`${API_URL}/api/v1/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -82,6 +82,7 @@ const handler = NextAuth({
   },
   pages: {
     signIn: "/login",
+    signOut: "/auth/signout",
     error: "/login",
   },
   session: {
