@@ -663,7 +663,7 @@ India
   - ✅ Account settings
   - ✅ Help center
   - ✅ CI/CD pipeline (GitHub Actions, Vercel, Render)
-- 🟢 Development implementation - Phase 2 (Core Features) - 80% complete
+- ✅ Development implementation - Phase 2 (Core Features) - 100% complete
   - ✅ AI-powered document generation (with automatic fallback)
   - ✅ PDF/DOCX export functionality (with watermark support)
   - ✅ Clause editor interface (8 endpoints)
@@ -706,7 +706,7 @@ India
 
 - **Pre-Development Phase:** 100% Complete ✅
 - **Development Phase (Phase 1):** 100% Complete ✅
-- **Development Phase (Phase 2):** 80% Complete 🟢
+- **Development Phase (Phase 2):** 100% Complete ✅
 - **Testing Phase:** 0% Complete ⏸️
 - **Launch Phase:** 0% Complete ⏸️ (blocked on Razorpay keys)
 
@@ -737,7 +737,7 @@ India
 - ✅ Help center with FAQ
 - ✅ CI/CD pipeline setup (GitHub Actions, Vercel, Render)
 
-### Phase 2 Progress (Core Features Implementation) - 80% Complete 🟢
+### Phase 2 Progress (Core Features Implementation) - 100% Complete ✅
 
 **Completed:**
 - ✅ AI-powered document generation — **E2E working** (Groq API via httpx)
@@ -767,13 +767,14 @@ India
 - ✅ **Professional landing page** — redesigned hero, features, pricing, CTA
 - ✅ **Custom signout page** — dark themed at /auth/signout
 - ✅ **Darker background** — #0a0a12 (slate 950)
-
-**In Progress:**
-- ⏸️ Frontend integration for clause editor & stamp duty calculator
-- ⏸️ Replace placeholder Razorpay keys with real keys
+- ✅ **Stamp Duty Calculator page** — full UI at /stamp-duty with calculation + state comparison
+- ✅ **Clause Library page** — full UI at /clauses with browse, search, category filter, copy, GST generator, custom clauses
+- ✅ **Sidebar nav** — added Clause Library + Stamp Duty links, fixed signout route
+- ✅ **Top-bar dropdown** — fixed malformed JSX (split into individual menu items)
 
 **Next Phase:**
 - ⏸️ Production deployment (Vercel + Render)
+- ⏸️ Replace placeholder Razorpay keys with real keys
 - ⏸️ Phase 3: Testing & Quality Assurance
 
 ### Target Metrics (Post-Launch)

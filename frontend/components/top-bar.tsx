@@ -73,14 +73,16 @@ export function TopBar({ className }: TopBarProps) {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <a href="/settings">Profile</a>
-
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <a href="/billing">Billing</a>
-
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
               <a href="/settings">Settings</a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <a href="/api/auth/signout">Sign out</a>
+              <a href="/auth/signout">Sign out</a>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

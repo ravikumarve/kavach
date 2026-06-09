@@ -9,6 +9,8 @@ import {
   CreditCard,
   HelpCircle,
   LogOut,
+  BookOpen,
+  Calculator,
 } from "lucide-react"
 
 const navigation = [
@@ -16,6 +18,8 @@ const navigation = [
   { name: "Documents", href: "/documents", icon: FileText },
   { name: "Create Document", href: "/create", icon: FilePlus },
   { name: "Templates", href: "/templates", icon: FileText },
+  { name: "Clause Library", href: "/clauses", icon: BookOpen },
+  { name: "Stamp Duty", href: "/stamp-duty", icon: Calculator },
   { name: "Billing", href: "/billing", icon: CreditCard },
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Help", href: "/help", icon: HelpCircle },
@@ -67,7 +71,7 @@ export function Sidebar({ className }: SidebarProps) {
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-400 transition-colors hover:bg-indigo-500/10 hover:text-gray-300"
           onClick={() => {
             // Handle logout
-            window.location.href = "/api/auth/signout"
+            window.location.href = "/auth/signout"
           }}
         >
           <LogOut className="h-5 w-5" />
