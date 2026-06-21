@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import "../styles/globals.css"
 import { Providers } from "@/components/providers"
 import ShieldCanvas from "@/components/ambient/ShieldCanvas"
@@ -14,6 +14,9 @@ export const metadata: Metadata = {
       "Your legal shield, drafted in seconds. AI-powered legal documents for Indian businesses.",
     type: "website",
   },
+}
+
+export const viewport: Viewport = {
   themeColor: "#050508",
 }
 
