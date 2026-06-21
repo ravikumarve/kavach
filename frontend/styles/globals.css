@@ -2,8 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
 @layer base {
   :root {
+    /* Judicial Slate & Indigo Shield Palette */
+    --bg-void: #050508;
+    --bg-surface: #0a0a12;
+    --bg-panel: #11111a;
+    --bg-glass: rgba(10, 10, 18, 0.6);
+    
+    --border-dim: rgba(255, 255, 255, 0.06);
+    --border-glow: rgba(99, 102, 241, 0.25);
+    
+    --indigo: #6366F1;
+    --indigo-dim: rgba(99, 102, 241, 0.1);
+    --indigo-bright: #818cf8;
+    
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --text-faint: #475569;
+    
+    --font-display: 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    
+    /* shadcn/ui compatible aliases */
     --background: 222 47% 4%;
     --foreground: 210 40% 98%;
     --card: 217 33% 9%;
@@ -43,15 +66,46 @@ div:has(> .__next-auth-theme-auto) {
 @layer base {
   * {
     @apply border-border;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
   }
+  
   body {
     @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--indigo);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  .text-indigo {
+    color: var(--indigo);
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+  }
+
+  .text-muted {
+    color: var(--text-muted);
+  }
+
+  .text-faint {
+    color: var(--text-faint);
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
   }
 }
