@@ -58,3 +58,9 @@ env/
 
 # Node modules
 node_modules/
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
